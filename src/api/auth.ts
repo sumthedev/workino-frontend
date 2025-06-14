@@ -1,4 +1,3 @@
-// api/auth.js - Fixed version with token interceptor
 import axios from 'axios';
 
 const api = axios.create({

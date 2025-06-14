@@ -36,8 +36,7 @@ export default function LoginForm() {
       const response = await api.post("/auth/login", payload);
       const token = response.data.token;
       localStorage.setItem('token', token);
-    
-  
+
       setStatus({
       type: "success",
       message: response.data.msg || "Login Successfull",

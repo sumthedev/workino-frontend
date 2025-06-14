@@ -20,7 +20,7 @@ export const LoginSchema = Yup.object().shape({
 })
 
 export const RegisterSchema = Yup.object().shape({
-  name: nameValidation,
+  fullName: nameValidation,
   email: emailValidation,
   password: passwordValidation,
   confirmPassword: Yup.string()

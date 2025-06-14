@@ -16,19 +16,19 @@ export default function VerifyEmailPage() {
   const [resendLoading, setResendLoading] = useState(false);
   const router = useRouter()
 
-  const handleVerify = async () => {
-    setLoading(true);
-    try {
-      const res = await api.post("/auth/verify-email", { email, code });
-      setStatus(res.data.msg);
-      router.push(LOGIN)
-    } catch (err : any) {
-      setStatus(err.response?.data?.msg || "Verification failed");
-    } finally {
-      setLoading(false);
-      
-    }
-  };
+ const handleVerify = async () => {
+  setLoading(true);
+  try {
+    const res = await api.post("/auth/verify-email", { email, code: code.trim() });
+    setStatus(res.data.msg);
+    router.push(LOGIN)
+  } catch (err: any) {
+    setStatus(err.response?.data?.msg || "Verification failed");
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   const handleResend = async () => {
     setResendLoading(true);
