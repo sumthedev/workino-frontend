@@ -12,7 +12,8 @@ import { Eye, EyeOff, Loader2 } from "lucide-react"
 import { LoginFormValues, LoginSchema } from "@/lib/validation/auth"
 import api from "@/api/auth"
 import { useRouter } from "next/navigation"
-import { DASHBOARD } from "@/lib/constant/Route"
+import { DASHBOARD, FORGET_PASSWORD } from "@/lib/constant/Route"
+import Link from "next/link"
 
 export default function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
@@ -33,11 +34,16 @@ export default function LoginForm() {
       }
 
       const response = await api.post("/auth/login", payload);
+      const token = response.data.token;
+      localStorage.setItem('token', token);
+    
+  
       setStatus({
       type: "success",
       message: response.data.msg || "Login Successfull",
 
     })
+
 
      router.push(DASHBOARD)
 
@@ -113,9 +119,9 @@ export default function LoginForm() {
                       Remember me
                     </Label>
                   </div>
-                  <a href="#" className="text-sm text-blue-600 hover:underline">
+                  <Link href={FORGET_PASSWORD} className="text-sm text-blue-600 hover:underline">
                     Forgot password?
-                  </a>
+                  </Link>
                 </div>
               </CardContent>
 

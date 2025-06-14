@@ -1,8 +1,6 @@
 "use client"
-
 import { useState } from "react"
 import { Formik, Form, Field, ErrorMessage } from "formik"
-
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -10,6 +8,7 @@ import { Label } from "@/components/ui/label"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Mail, ArrowLeft, Loader2, CheckCircle } from "lucide-react"
 import { ForgotPasswordFormValues, ForgotPasswordSchema } from "@/lib/validation/auth"
+import api from "@/api/auth"
 
 export default function ForgotPasswordForm() {
   const [emailSent, setEmailSent] = useState(false)
@@ -18,17 +17,17 @@ export default function ForgotPasswordForm() {
     email: "",
   }
 
-  const handleSubmit = async (values: ForgotPasswordFormValues, { setSubmitting, setStatus }: any) => {
-    try {
-      console.log("Reset password email sent to:", values.email)
-      setEmailSent(true)
-      setStatus({ type: "success", message: "Password reset email sent successfully!" })
-    } catch (error) {
-      setStatus({ type: "error", message: "Failed to send reset email. Please try again." })
-    } finally {
-      setSubmitting(false)
-    }
+ const handleSubmit = async (values: ForgotPasswordFormValues, { setSubmitting, setStatus }: any) => {
+  try {
+    const res = await api.post("/auth/forgot-password", { email: values.email });
+    setEmailSent(true);
+    setStatus({ type: "success", message: res.data.msg || "Password reset email sent successfully!" });
+  } catch (error: any) {
+    setStatus({ type: "error", message: error.response?.data?.msg || "Failed to send reset email. Please try again." });
+  } finally {
+    setSubmitting(false);
   }
+}
 
   if (emailSent) {
     return (

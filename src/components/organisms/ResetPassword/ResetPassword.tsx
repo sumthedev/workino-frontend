@@ -1,5 +1,4 @@
 "use client"
-
 import { useState } from "react"
 import { Formik, Form, Field, ErrorMessage } from "formik"
 import { Button } from "@/components/ui/button"
@@ -9,6 +8,10 @@ import { Label } from "@/components/ui/label"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Eye, EyeOff, Loader2, CheckCircle, Lock } from "lucide-react"
 import { ResetPasswordFormValues, ResetPasswordSchema } from "@/lib/validation/auth"
+import { useSearchParams } from "next/navigation"
+import api from "@/api/auth"
+import Link from "next/link"
+import { LOGIN } from "@/lib/constant/Route"
 
 
 export default function ResetPasswordForm() {
@@ -16,21 +19,34 @@ export default function ResetPasswordForm() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [isReset, setIsReset] = useState(false)
 
+  const searchParams = useSearchParams();
+  const email = searchParams.get("email");
+  const token = searchParams.get("token");
+
   const initialValues: ResetPasswordFormValues = {
     password: "",
     confirmPassword: "",
   }
 
-  const handleSubmit = async (values: ResetPasswordFormValues, { setSubmitting, setStatus }: any) => {
+ const handleSubmit = async (values: ResetPasswordFormValues, { setSubmitting, setStatus }: any) => {
     try {
-    
-      console.log("Password reset:", values)
-      setIsReset(true)
-      setStatus({ type: "success", message: "Password reset successfully!" })
-    } catch (error) {
-      setStatus({ type: "error", message: "Failed to reset password. Please try again." })
+      if (!email || !token) {
+        setStatus({ type: "error", message: "Missing token or email." });
+        return;
+      }
+
+      await api.post("/auth/reset-password", {
+        email,
+        token,
+        newPassword: values.password
+      });
+
+      setIsReset(true);
+      setStatus({ type: "success", message: "Password reset successfully!" });
+    } catch (error: any) {
+      setStatus({ type: "error", message: error.response?.data?.msg || "Failed to reset password. Please try again." });
     } finally {
-      setSubmitting(false)
+      setSubmitting(false);
     }
   }
 
@@ -147,9 +163,9 @@ export default function ResetPasswordForm() {
 
                 <p className="text-center text-sm text-gray-600">
                   Remember your password?{" "}
-                  <a href="#" className="text-blue-600 hover:underline">
+                  <Link href={LOGIN} className="text-blue-600 hover:underline">
                     Back to Login
-                  </a>
+                  </Link>
                 </p>
               </CardFooter>
             </Form>

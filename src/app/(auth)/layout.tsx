@@ -1,16 +1,21 @@
-"use client"
-import { DASHBOARD, LOGIN, ONBOARDING } from '@/lib/constant/Route';
-import { useRouter } from 'next/navigation';
-import React, { ReactNode, useEffect } from 'react'
+"use client";
+import { useAuth } from "@/hooks/useAuth";
+import React, { ReactNode } from "react";
 
 const AuthLayout = ({ children }: { children: ReactNode }) => {
+  const { user, loading, initialized } = useAuth();
 
+  if (!initialized || loading) {
+    return <div>Loading...</div>;
+  }
 
-    return (
-        <div className='w-full h-[100vh]'>
-            {children}
-        </div>
-    )
-}
+  console.log(user, "here i am");
 
-export default AuthLayout
+  return (
+    <div className='w-full h-[100vh]'>
+      {children}
+    </div>
+  );
+};
+
+export default AuthLayout;
