@@ -1,12 +1,19 @@
+"use client"
+
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import Link from "next/link"
 import { ArrowRight } from "lucide-react"
 import { LOGIN } from "@/lib/constant/Route"
+import { useAuth } from "@/hooks/useAuth";
 
 export default function Home() {
+  const { user }  = useAuth()
+
+  console.log(user);
+  
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 p-4">
+    <div className="min-h-screen flex flex-col items-center justify-center p-4">
       <div className="w-full max-w-md text-center mb-8">
         <h1 className="text-4xl font-bold mb-2">Workino</h1>
         <p className="text-gray-600 mb-6">Your all-in-one workspace for notes, tasks, and collaboration</p>

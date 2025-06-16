@@ -1,21 +1,30 @@
 "use client";
+import { Loading } from "@/components/molecules/Loading/Loading";
 import { useAuth } from "@/hooks/useAuth";
-import React, { ReactNode } from "react";
+import { DASHBOARD, LOGIN, ONBOARDING } from "@/lib/constant/Route";
+import { useRouter, usePathname } from "next/navigation";
+import React, { ReactNode, useEffect } from "react";
 
 const AuthLayout = ({ children }: { children: ReactNode }) => {
-  const { user, loading, initialized } = useAuth();
+  const { user, loading, isOnBoarded } = useAuth();
+  const router = useRouter();
+  const pathname = usePathname();
 
-  if (!initialized || loading) {
-    return <div>Loading...</div>;
-  }
+  useEffect(() => {
+    if (!loading) {
+      if (!user && pathname !== LOGIN) {
+        router.replace(LOGIN);
+      } else if (user && !isOnBoarded && pathname !== ONBOARDING) {
+        router.replace(ONBOARDING);
+      } else if (user && isOnBoarded && pathname !== DASHBOARD) {
+        router.replace(DASHBOARD);
+      }
+    }
+  }, [loading, user, isOnBoarded, pathname, router]);
 
-  console.log(user, "here i am");
+  if (loading) return <Loading />;
 
-  return (
-    <div className='w-full h-[100vh]'>
-      {children}
-    </div>
-  );
+  return <div className='w-full h-[100vh]'>{children}</div>;
 };
 
 export default AuthLayout;

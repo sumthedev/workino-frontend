@@ -12,7 +12,7 @@ import { Eye, EyeOff, Loader2 } from "lucide-react"
 import { LoginFormValues, LoginSchema } from "@/lib/validation/auth"
 import api from "@/api/auth"
 import { useRouter } from "next/navigation"
-import { DASHBOARD, FORGET_PASSWORD } from "@/lib/constant/Route"
+import { DASHBOARD, FORGET_PASSWORD, LOGIN, REGISTER } from "@/lib/constant/Route"
 import Link from "next/link"
 
 export default function LoginForm() {
@@ -43,8 +43,7 @@ export default function LoginForm() {
 
     })
 
-
-     router.push(DASHBOARD)
+     router.push("/")
 
     } catch (error) {
       setStatus({ type: "error", message: "Invalid email or password. Please try again." })
@@ -138,9 +137,9 @@ export default function LoginForm() {
 
                 <p className="text-center text-sm text-gray-600">
                   {"Don't have an account? "}
-                  <a href="#" className="text-blue-600 hover:underline">
+                  <Link href={REGISTER} className="text-blue-600 hover:underline">
                     Sign up
-                  </a>
+                  </Link>
                 </p>
               </CardFooter>
             </Form>
