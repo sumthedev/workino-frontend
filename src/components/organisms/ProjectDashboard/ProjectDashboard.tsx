@@ -1,7 +1,12 @@
 "use client"
 
-import { useState } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { useEffect, useState } from "react"
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -15,7 +20,8 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { ProjectView } from "../ProjectView/ProjectView"
-import { Plus, FolderPlus, Users, User, Settings } from "lucide-react"
+import { Plus, FolderPlus, Users, User, Settings, Loader2 } from "lucide-react"
+import api from "@/api/auth"
 
 interface ProjectDashboardProps {
   workspace: any
@@ -25,9 +31,10 @@ interface ProjectDashboardProps {
 interface Project {
   id: string
   name: string
-  teamsCount: number
-  tasksCount: number
-  createdAt: string
+  workspaceId: string
+  createdAt?: string
+  teamsCount?: number
+  tasksCount?: number
 }
 
 export function ProjectDashboard({ workspace, usageMode }: ProjectDashboardProps) {
@@ -37,25 +44,50 @@ export function ProjectDashboard({ workspace, usageMode }: ProjectDashboardProps
   const [isCreating, setIsCreating] = useState(false)
   const [showCreateDialog, setShowCreateDialog] = useState(false)
 
+
+  useEffect(() => {
+    const fetchProjects = async () => {
+      try {
+        const token = localStorage.getItem("token")
+        const response = await api.get(`/project/all`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
+        setProjects(response.data.projects)
+      } catch (error) {
+        console.error("Error loading projects:", error)
+      }
+    }
+
+    fetchProjects()
+  }, [workspace.id])
+
   const handleCreateProject = async () => {
     if (!newProjectName.trim()) return
 
     setIsCreating(true)
-
-    // Simulate API call
-    setTimeout(() => {
-      const newProject: Project = {
-        id: "proj-" + Date.now(),
+    try {
+      const payload = {
         name: newProjectName,
-        teamsCount: 0,
-        tasksCount: 0,
-        createdAt: new Date().toISOString(),
+        workspaceId: workspace.id,
       }
-      setProjects([...projects, newProject])
+
+      const token = localStorage.getItem("token")
+      const response = await api.post("/project/create", payload, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+
+      setProjects(response.data.projects)
       setNewProjectName("")
       setShowCreateDialog(false)
+    } catch (error) {
+      console.error("Failed to create project:", error)
+    } finally {
       setIsCreating(false)
-    }, 1000)
+    }
   }
 
   if (selectedProject) {
@@ -117,7 +149,7 @@ export function ProjectDashboard({ workspace, usageMode }: ProjectDashboardProps
               <DialogHeader>
                 <DialogTitle>Create New Project</DialogTitle>
                 <DialogDescription>
-                  Add a new project to organize your {usageMode === "ALONE" ? "tasks" : "team's work"}
+                  Add a new project to organize your {usageMode === "ALONE" ? "tasks" : "team's work"}.
                 </DialogDescription>
               </DialogHeader>
               <div className="space-y-4">
@@ -134,8 +166,18 @@ export function ProjectDashboard({ workspace, usageMode }: ProjectDashboardProps
                   <Button variant="outline" onClick={() => setShowCreateDialog(false)}>
                     Cancel
                   </Button>
-                  <Button onClick={handleCreateProject} disabled={!newProjectName.trim() || isCreating}>
-                    {isCreating ? "Creating..." : "Create Project"}
+                  <Button
+                    onClick={handleCreateProject}
+                    disabled={!newProjectName.trim() || isCreating}
+                  >
+                    {isCreating ? (
+                      <>
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        Creating...
+                      </>
+                    ) : (
+                      "Create Project"
+                    )}
                   </Button>
                 </div>
               </div>
@@ -149,7 +191,7 @@ export function ProjectDashboard({ workspace, usageMode }: ProjectDashboardProps
               <FolderPlus className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
               <h3 className="text-lg font-medium mb-2">No projects yet</h3>
               <p className="text-muted-foreground mb-4">
-                Create your first project to start organizing your {usageMode === "ALONE" ? "tasks" : "team's work"}
+                Create your first project to start organizing your {usageMode === "ALONE" ? "tasks" : "team's work"}.
               </p>
               <Button onClick={() => setShowCreateDialog(true)}>
                 <Plus className="w-4 h-4 mr-2" />
@@ -168,11 +210,7 @@ export function ProjectDashboard({ workspace, usageMode }: ProjectDashboardProps
                 <CardHeader>
                   <CardTitle className="flex items-center justify-between">
                     {project.name}
-                    <Badge variant="outline">{project.teamsCount} teams</Badge>
                   </CardTitle>
-                  <CardDescription>
-                    {project.tasksCount} tasks • Created {new Date(project.createdAt).toLocaleDateString()}
-                  </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="flex justify-between text-sm text-muted-foreground">

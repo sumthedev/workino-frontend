@@ -6,5 +6,6 @@ export const REGISTER: string = `${ROOT}register`;
 export const EMAIL_VERIFICATION: string = `${ROOT}verify-email`;
 export const DASHBOARD: string = `${ROOT}dashboard`;
 export const ONBOARDING = `${ROOT}onboarding`
+export const WORKSPACE: string = `${ROOT}workspace`
 
 

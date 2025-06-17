@@ -1,9 +1,11 @@
 "use client";
 import { Loading } from "@/components/molecules/Loading/Loading";
 import { useAuth } from "@/hooks/useAuth";
-import { DASHBOARD, LOGIN, ONBOARDING } from "@/lib/constant/Route";
+import { DASHBOARD, FORGET_PASSWORD, LOGIN, ONBOARDING, REGISTER } from "@/lib/constant/Route";
 import { useRouter, usePathname } from "next/navigation";
 import React, { ReactNode, useEffect } from "react";
+
+
 
 const AuthLayout = ({ children }: { children: ReactNode }) => {
   const { user, loading, isOnBoarded } = useAuth();
@@ -12,12 +14,12 @@ const AuthLayout = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     if (!loading) {
-      if (!user && pathname !== LOGIN) {
-        router.replace(LOGIN);
+      if (!user) {
+        router.push(LOGIN);
       } else if (user && !isOnBoarded && pathname !== ONBOARDING) {
-        router.replace(ONBOARDING);
+        router.push(ONBOARDING);
       } else if (user && isOnBoarded && pathname !== DASHBOARD) {
-        router.replace(DASHBOARD);
+        router.push(DASHBOARD);
       }
     }
   }, [loading, user, isOnBoarded, pathname, router]);

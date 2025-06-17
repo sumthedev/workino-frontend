@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label"
 import { TeamInvitation } from "../TeamInvitaion/TeamInvitation"
 import { ProjectDashboard } from "../ProjectDashboard/ProjectDashboard"
 import { Building2 } from "lucide-react"
+import api from "@/api/auth"
 
 interface WorkspaceSetupProps {
   usageMode: "ALONE" | "TEAM"
@@ -24,16 +25,25 @@ export function WorkspaceSetup({ usageMode }: WorkspaceSetupProps) {
 
     setIsCreating(true)
 
-    setTimeout(() => {
-      const newWorkspace = {
-        id: "ws-" + Date.now(),
-        name: workspaceName,
-        usageMode,
-      }
-      setWorkspace(newWorkspace)
-      setStep(usageMode === "TEAM" ? "invite" : "dashboard")
-      setIsCreating(false)
-    }, 1000)
+
+    const payload = {
+      name: workspaceName,
+      usageMode
+    }
+
+    const token = localStorage.getItem("token");
+
+    const response = await api.post("/workspace/create", payload, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    setWorkspace(response.data.workspace);
+    setStep(usageMode === "TEAM" ? "invite" : "dashboard");
+
+    setStep(usageMode === "TEAM" ? "invite" : "dashboard")
+
   }
 
   if (step === "dashboard" && workspace) {

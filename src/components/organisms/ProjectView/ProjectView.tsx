@@ -44,12 +44,12 @@ export function ProjectView({ project, workspace, usageMode, onBack }: ProjectVi
 
     setIsCreating(true)
 
-    // Simulate API call
+ 
     setTimeout(() => {
       const newTeam: Team = {
         id: "team-" + Date.now(),
         name: newTeamName,
-        membersCount: 1, // Owner
+        membersCount: 1,
         tasksCount: 0,
         createdAt: new Date().toISOString(),
       }

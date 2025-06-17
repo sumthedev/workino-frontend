@@ -24,8 +24,8 @@ function page() {
     <div className="flex items-center justify-center min-h-screen p-4">
       <div className="w-full max-w-2xl space-y-6">
         <div className="text-center space-y-2">
-          <h1 className="text-3xl font-bold">Welcome to Workino</h1>
-          <p className="text-muted-foreground">How do you plan to use workino?</p>
+          <h1 className="text-3xl font-bold">Welcome to Workino Workspace</h1>
+          <p className="text-muted-foreground">Create a new workspace with team or without?</p>
         </div>
 
         <div className="grid md:grid-cols-2 gap-6">
