@@ -43,7 +43,7 @@ const menuItems = [
   },
   {
     title: "Workspaces",
-    url: "/workspaces",
+    url: "/dashboard/workspaces",
     icon: Building2,
   },
   {

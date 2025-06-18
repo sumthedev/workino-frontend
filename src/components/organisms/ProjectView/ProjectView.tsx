@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -16,21 +16,25 @@ import {
 } from "@/components/ui/dialog"
 import { TaskBoard } from "../TaskBoard/TaskBoard"
 import { ArrowLeft, Plus, Users, User, Calendar, CheckCircle2 } from "lucide-react"
+import api from "@/api/auth"
 
 interface ProjectViewProps {
   project: any
   workspace: any
   usageMode: "ALONE" | "TEAM"
   onBack: () => void
+
 }
 
 interface Team {
   id: string
   name: string
-  membersCount: number
-  tasksCount: number
+  projectId: string
   createdAt: string
+  tasksCount: number
+  membersCount: number
 }
+
 
 export function ProjectView({ project, workspace, usageMode, onBack }: ProjectViewProps) {
   const [teams, setTeams] = useState<Team[]>([])
@@ -40,25 +44,72 @@ export function ProjectView({ project, workspace, usageMode, onBack }: ProjectVi
   const [showCreateDialog, setShowCreateDialog] = useState(false)
 
   const handleCreateTeam = async () => {
-    if (!newTeamName.trim()) return
+    if (!newTeamName.trim()) return;
 
-    setIsCreating(true)
+    setIsCreating(true);
 
- 
-    setTimeout(() => {
-      const newTeam: Team = {
-        id: "team-" + Date.now(),
+
+    try {
+      const payload = {
         name: newTeamName,
-        membersCount: 1,
+        projectId: project.id,
+      };
+
+
+      const token = localStorage.getItem("token");
+      const response = await api.post("/team/create", payload, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const createdTeam = response.data.team;
+
+      const teamWithCounts = {
+        ...createdTeam,
+        membersCount: createdTeam.members?.length || 1,
         tasksCount: 0,
-        createdAt: new Date().toISOString(),
-      }
-      setTeams([...teams, newTeam])
-      setNewTeamName("")
-      setShowCreateDialog(false)
-      setIsCreating(false)
-    }, 1000)
+      };
+
+      setTeams((prev) => [...prev, teamWithCounts]);
+      setNewTeamName("");
+      setShowCreateDialog(false);
+    } catch (error) {
+      console.error("Failed to create team:", error);
+    } finally {
+      setIsCreating(false);
+    }
+  };
+
+useEffect(() => {
+  const fetchTeam = async () => {
+    try {
+      const token = localStorage.getItem("token");
+
+      const response = await api.get("/team/all", {
+        params: { projectId: project.id },
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      setTeams(
+        response.data.teams.map((team: any) => ({
+          ...team,
+          membersCount: team.members?.length || 1,
+          tasksCount: 0, // You can replace this if needed
+        }))
+      );
+    } catch (error) {
+      console.error("Failed to fetch team:", error);
+    }
+  };
+
+  if (project?.id) {
+    fetchTeam();
   }
+}, [project.id]);
+
 
   if (selectedTeam) {
     return (
@@ -103,7 +154,8 @@ export function ProjectView({ project, workspace, usageMode, onBack }: ProjectVi
           <h2 className="text-xl font-semibold">{usageMode === "ALONE" ? "Workspaces" : "Teams"}</h2>
           <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
             <DialogTrigger asChild>
-              <Button>
+              <Button
+               disabled={!newTeamName.trim() || isCreating || teams.length >= 3}>
                 <Plus className="w-4 h-4 mr-2" />
                 {usageMode === "ALONE" ? "New Workspace" : "New Team"}
               </Button>

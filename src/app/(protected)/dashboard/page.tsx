@@ -2,8 +2,6 @@
 
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
-import axios from "axios"
-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -153,7 +151,7 @@ function DashboardPage() {
                   <Users className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">{workspace.members.length}</div>
+                  {/* <div className="text-2xl font-bold">{workspace.members.length}</div> */}
                   <p className="text-xs text-muted-foreground">Active members</p>
                 </CardContent>
               </Card>

@@ -2,7 +2,6 @@
 import api from "@/api/auth"
 import { WorkspaceCard } from "@/components/molecules/WorkspaceCard/WorkspaceCard"
 import React, { useState, useEffect } from "react"
-import { useRouter } from "next/navigation"
 import { ProjectDashboard } from "@/components/organisms/ProjectDashboard/ProjectDashboard"
 
 
@@ -32,7 +31,6 @@ function WorkspacePage() {
   const [selectedWorkspace, setSelectedWorkspace] = useState<WorkspaceData | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const router = useRouter()
 
   const fetchWorkspace = async () => {
     try {
