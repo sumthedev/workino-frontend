@@ -1,6 +1,4 @@
 "use client";
-
-
 import { Loading } from '@/components/molecules/Loading/Loading';
 import { useAuth } from '@/hooks/useAuth';
 import { LOGIN, ONBOARDING } from '@/lib/constant/Route';
@@ -31,9 +29,7 @@ const ProtectedLayout = ({ children }: ProtectedLayoutProps) => {
     }
     return (
         <div className="w-full min-h-screen">
-
-            {children}
-
+                {children}
         </div>
     );
 };

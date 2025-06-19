@@ -3,28 +3,7 @@ import api from "@/api/auth"
 import { WorkspaceCard } from "@/components/molecules/WorkspaceCard/WorkspaceCard"
 import React, { useState, useEffect } from "react"
 import { ProjectDashboard } from "@/components/organisms/ProjectDashboard/ProjectDashboard"
-
-
-interface WorkspaceData {
-  id: string
-  name: string
-  usageMode: "ALONE" | "TEAM"
-  createdAt: string
-  updatedAt: string
-  members: Array<{
-    id: string
-    role: string
-    accepted: boolean
-    workspaceId: string
-    userId: string
-    invitedAt: string
-  }>
-  owner: {
-    id: string
-    fullName: string
-    email: string
-  }
-}
+import { WorkspaceData } from "@/lib/constant/type"
 
 function WorkspacePage() {
   const [workspaces, setWorkspaces] = useState<WorkspaceData[]>([])

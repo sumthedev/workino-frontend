@@ -1,7 +1,6 @@
 "use client"
 
 import type React from "react"
-
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -10,7 +9,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Badge } from "@/components/ui/badge"
 import { Trash2, Mail, Users, Plus, Check } from "lucide-react"
-
+import { Project, WorkspaceData } from "@/lib/constant/type"
+import api from "@/api/auth"
 
 interface TeamMember {
   id: string
@@ -19,70 +19,88 @@ interface TeamMember {
   status: "pending" | "sent"
 }
 
-export default function InviteTeamMembers() {
-  const [teamName, setTeamName] = useState("")
+interface Team {
+  id: string
+  name: string
+  membersCount: number
+  tasksCount: number
+}
+
+interface InviteTeamMembersProps {
+  selectedWorkspaceId: string
+  selectedProjectId: string
+  selectedTeamId: string
+  setSelectedWorkspaceId: (id: string) => void
+  setSelectedProjectId: (id: string) => void
+  setSelectedTeamId: (id: string) => void
+  workspaces: WorkspaceData[]
+  projects: Project[]
+  teams: Team[]
+  loading: boolean
+  isLoadingTeams: boolean
+  error: string | null
+}
+
+export default function InviteTeamMembers({
+  selectedWorkspaceId,
+  selectedProjectId,
+  selectedTeamId,
+  setSelectedWorkspaceId,
+  setSelectedProjectId,
+  setSelectedTeamId,
+  workspaces,
+  projects,
+  teams,
+  loading,
+  isLoadingTeams,
+  error
+}: InviteTeamMembersProps) {
   const [email, setEmail] = useState("")
   const [role, setRole] = useState<"MEMBER" | "ADMIN">("MEMBER")
   const [members, setMembers] = useState<TeamMember[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [step, setStep] = useState<"setup" | "invite" | "complete">("setup")
 
+  const addMember = async () => {
 
-  const addMember = () => {
-    if (!email) return
-
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    if (!emailRegex.test(email)) {
-      
-      return
+    const payload = {
+      email: email,
+      role: role,
+      teamId: selectedTeamId,
     }
+    const token = localStorage.getItem("token");
+    const res = await api.post("/invite", payload, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
 
-    if (members.some((member) => member.email === email)) {
+    console.log(res);
     
-      return
-    }
 
-    const newMember: TeamMember = {
+    setMembers([...members, {
       id: Math.random().toString(36).substr(2, 9),
       email,
       role,
       status: "pending",
-    }
-
-    setMembers([...members, newMember])
+    }])
     setEmail("")
     setRole("MEMBER")
   }
 
   const removeMember = (id: string) => {
-    setMembers(members.filter((member) => member.id !== id))
+    setMembers(members.filter((m) => m.id !== id))
   }
 
-  const createTeamAndSendInvites = async () => {
-    if (!teamName.trim()) {
-    
-      return
-    }
-
+  const sendInvitesToTeam = async () => {
+    if (!selectedTeamId) return
     setIsLoading(true)
-
     try {
-      // Simulate team creation
-      await new Promise((resolve) => setTimeout(resolve, 1000))
-
-      // Simulate sending invitations
       for (let i = 0; i < members.length; i++) {
-        await new Promise((resolve) => setTimeout(resolve, 500))
-        setMembers((prev) =>
-          prev.map((member) => (member.id === members[i].id ? { ...member, status: "sent" } : member)),
-        )
+        await new Promise((r) => setTimeout(r, 500))
+        setMembers(prev => prev.map((m) => m.id === members[i].id ? { ...m, status: "sent" } : m))
       }
-
-      
-
       setStep("complete")
-    } catch (error) {
-     
+    } catch (err) {
+      console.error("Failed to send invites")
     } finally {
       setIsLoading(false)
     }
@@ -95,6 +113,38 @@ export default function InviteTeamMembers() {
     }
   }
 
+  console.log(selectedTeamId);
+
+  const selectedTeam = teams.find((t) => t.id === selectedTeamId)
+
+  if (loading) {
+    return (
+      <Card className="w-full max-w-2xl mx-auto">
+        <CardContent className="flex items-center justify-center py-8">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+            <p className="text-muted-foreground">Loading workspaces...</p>
+          </div>
+        </CardContent>
+      </Card>
+    )
+  }
+
+  if (error) {
+    return (
+      <Card className="w-full max-w-2xl mx-auto">
+        <CardContent className="flex items-center justify-center py-8">
+          <div className="text-center">
+            <p className="text-destructive mb-4">{error}</p>
+            <Button onClick={() => window.location.reload()}>
+              Try Again
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+    )
+  }
+
   if (step === "complete") {
     return (
       <Card className="w-full max-w-2xl mx-auto">
@@ -102,19 +152,19 @@ export default function InviteTeamMembers() {
           <div className="mx-auto w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mb-4">
             <Check className="w-6 h-6 text-green-600" />
           </div>
-          <CardTitle className="text-2xl">Team Created Successfully!</CardTitle>
+          <CardTitle className="text-2xl">Invitations Sent Successfully!</CardTitle>
           <CardDescription>
-            Your team "{teamName}" has been created and invitations have been sent to all members.
+            Invitations have been sent to all members for team "{selectedTeam?.name}".
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="bg-muted p-4 rounded-lg">
             <h4 className="font-medium mb-2">Invitations Sent:</h4>
             <div className="space-y-2">
-              {members.map((member) => (
-                <div key={member.id} className="flex items-center justify-between text-sm">
-                  <span>{member.email}</span>
-                  <Badge variant="secondary">{member.role}</Badge>
+              {members.map((m) => (
+                <div key={m.id} className="flex items-center justify-between text-sm">
+                  <span>{m.email}</span>
+                  <Badge variant="secondary">{m.role}</Badge>
                 </div>
               ))}
             </div>
@@ -132,33 +182,72 @@ export default function InviteTeamMembers() {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Users className="w-5 h-5" />
-          {step === "setup" ? "Create Your Team" : "Invite Team Members"}
+          {step === "setup" ? "Select Team & Add Members" : "Invite Team Members"}
         </CardTitle>
         <CardDescription>
           {step === "setup"
-            ? "Set up your team and invite members to collaborate"
-            : "Add team members by email and assign their roles"}
+            ? "Choose a workspace, project, and team, then invite members."
+            : "Add team members by email and assign their roles."}
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
         {step === "setup" && (
-          <div className="space-y-2">
-            <Label htmlFor="teamName">Team Name</Label>
-            <Input
-              id="teamName"
-              placeholder="Enter your team name"
-              value={teamName}
-              onChange={(e) => setTeamName(e.target.value)}
-            />
-          </div>
+          <>
+            <div>
+              <Label>Select Workspace</Label>
+              <Select value={selectedWorkspaceId} onValueChange={setSelectedWorkspaceId}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select Workspace" />
+                </SelectTrigger>
+                <SelectContent>
+                  {workspaces.map((w) => (
+                    <SelectItem key={w.id} value={w.id}>{w.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
+              <Label>Select Project</Label>
+              <Select value={selectedProjectId} onValueChange={setSelectedProjectId} disabled={!selectedWorkspaceId}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select Project" />
+                </SelectTrigger>
+                <SelectContent>
+                  {projects.map((p) => (
+                    <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
+              <Label>Select Team</Label>
+              <Select
+                value={selectedTeamId}
+                onValueChange={setSelectedTeamId}
+                disabled={!selectedProjectId || isLoadingTeams}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder={isLoadingTeams ? "Loading teams..." : "Select Team"} />
+                </SelectTrigger>
+                <SelectContent>
+                  {teams.map((t) => (
+                    <SelectItem key={t.id} value={t.id}>
+                      {t.name} ({t.membersCount} members)
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </>
         )}
 
         <div className="space-y-4">
           <div className="flex gap-2">
             <div className="flex-1">
-              <Label htmlFor="email">Email Address</Label>
+              <Label>Email</Label>
               <Input
-                id="email"
                 type="email"
                 placeholder="colleague@company.com"
                 value={email}
@@ -167,7 +256,7 @@ export default function InviteTeamMembers() {
               />
             </div>
             <div className="w-32">
-              <Label htmlFor="role">Role</Label>
+              <Label>Role</Label>
               <Select value={role} onValueChange={(value: "MEMBER" | "ADMIN") => setRole(value)}>
                 <SelectTrigger>
                   <SelectValue />
@@ -222,7 +311,7 @@ export default function InviteTeamMembers() {
         </div>
 
         <div className="flex gap-2 pt-4">
-          {step === "setup" && members.length > 0 && (
+          {step === "setup" && members.length > 0 && selectedTeamId && (
             <Button onClick={() => setStep("invite")} className="flex-1">
               Continue
             </Button>
@@ -233,16 +322,16 @@ export default function InviteTeamMembers() {
                 Back
               </Button>
               <Button
-                onClick={createTeamAndSendInvites}
+                onClick={sendInvitesToTeam}
                 disabled={isLoading || members.length === 0}
                 className="flex-1"
               >
-                {isLoading ? "Creating Team..." : `Create Team & Send ${members.length} Invites`}
+                {isLoading ? "Sending..." : `Send ${members.length} Invite(s)`}
               </Button>
             </>
           )}
-          {step === "setup" && members.length === 0 && (
-            <Button onClick={() => (window.location.href = "/dashboard")} variant="outline" className="flex-1">
+          {step === "setup" && (!selectedTeamId || members.length === 0) && (
+            <Button variant="outline" onClick={() => (window.location.href = "/dashboard")} className="flex-1">
               Skip for Now
             </Button>
           )}

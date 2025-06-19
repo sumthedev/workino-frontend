@@ -17,7 +17,7 @@ import {
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
 import { ArrowLeft, Plus, Clock, CheckCircle2, Circle, UserPlus } from "lucide-react"
-
+import { useRouter } from "next/navigation"
 interface TaskBoardProps {
   team: any
   project: any
@@ -49,13 +49,13 @@ export function TaskBoard({ team, project, workspace, usageMode, onBack }: TaskB
     assignedToId: "unassigned",
   })
   const [isCreating, setIsCreating] = useState(false)
+  const router = useRouter()
 
   const handleCreateTask = async () => {
     if (!newTask.title.trim()) return
 
     setIsCreating(true)
 
-    // Simulate API call
     setTimeout(() => {
       const task: Task = {
         id: "task-" + Date.now(),
@@ -102,6 +102,10 @@ export function TaskBoard({ team, project, workspace, usageMode, onBack }: TaskB
     }
   }
 
+  const handleInvite = () => {
+    router.push("/invite")
+  }
+
   const tasksByStatus = {
     TODO: tasks.filter((task) => task.status === "TODO"),
     PENDING: tasks.filter((task) => task.status === "PENDING"),
@@ -127,7 +131,7 @@ export function TaskBoard({ team, project, workspace, usageMode, onBack }: TaskB
             </div>
             <div className="flex items-center space-x-2">
               {usageMode === "TEAM" && (
-                <Button variant="outline" size="sm">
+                <Button variant="outline" size="sm" onClick={handleInvite}>
                   <UserPlus className="w-4 h-4 mr-2" />
                   Invite Members
                 </Button>
@@ -167,7 +171,7 @@ export function TaskBoard({ team, project, workspace, usageMode, onBack }: TaskB
                       <Label>Priority</Label>
                       <Select
                         value={newTask.priority}
-                        onValueChange={(value: Task["priority"]) => setNewTask({ ...newTask, priority: value })}
+                        // onValueChange={(value: Task["priority"]) => setNewTask({ ...newTask, priority: value })}
                       >
                         <SelectTrigger>
                           <SelectValue />
