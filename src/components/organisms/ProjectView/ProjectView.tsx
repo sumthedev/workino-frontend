@@ -165,7 +165,7 @@ useEffect(() => {
                 <DialogTitle>Create New {usageMode === "ALONE" ? "Workspace" : "Team"}</DialogTitle>
                 <DialogDescription>
                   {usageMode === "ALONE"
-                    ? "Create a workspace to organize your tasks"
+                    ? "Create a project to organize your tasks"
                     : "Create a team to collaborate on tasks"}
                 </DialogDescription>
               </DialogHeader>
@@ -184,7 +184,7 @@ useEffect(() => {
                     Cancel
                   </Button>
                   <Button onClick={handleCreateTeam} disabled={!newTeamName.trim() || isCreating}>
-                    {isCreating ? "Creating..." : `Create ${usageMode === "ALONE" ? "Workspace" : "Team"}`}
+                    {isCreating ? "Creating..." : `Create ${usageMode === "ALONE" ? "Project" : "Team"}`}
                   </Button>
                 </div>
               </div>

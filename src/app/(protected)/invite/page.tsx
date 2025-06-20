@@ -3,6 +3,7 @@ import { useState, useEffect } from "react"
 import InviteTeamMembers from "@/components/organisms/AcceptInvitation/InviteTeam/InviteTeam"
 import api from "@/api/auth"
 import { Project, WorkspaceData } from "@/lib/constant/type"
+import { toast } from "sonner"
 
 interface Team {
   id: string
@@ -29,10 +30,15 @@ export default function Page() {
       const response = await api.get("/workspace/all", {
         headers: { Authorization: `Bearer ${token}` },
       })
-      setWorkspaces(response.data.workspace || [])
+      const allWorkspaces = response.data.workspace || [];
+
+      const teamWorkspaces = allWorkspaces.filter(
+        (workspace: { usageMode: string }) => workspace.usageMode === "TEAM"
+      );
+      setWorkspaces(teamWorkspaces);
+
     } catch (err: any) {
-      console.error("Error fetching workspace:", err)
-      setError("Failed to load workspaces")
+      toast.error("Failed to fetch workspace")
     } finally {
       setLoading(false)
     }
@@ -45,9 +51,12 @@ export default function Page() {
         params: { workspaceId },
         headers: { Authorization: `Bearer ${token}` },
       })
-      setProjects(response.data.projects || [])
+
+      const projectsData = response.data?.projects || [];
+      const filteredProjects = projectsData.filter((project: any) => project.usageMode === "TEAM");
+      setProjects(filteredProjects);
     } catch (err) {
-      console.error("Error loading projects:", err)
+      toast.error("Failed to fetch workspace")
     }
   }
 
@@ -68,7 +77,7 @@ export default function Page() {
 
       setTeams(teamsList)
     } catch (error) {
-      console.error("Failed to fetch team:", error)
+      toast.error("Failed to fetch workspace")
     } finally {
       setIsLoadingTeams(false)
     }

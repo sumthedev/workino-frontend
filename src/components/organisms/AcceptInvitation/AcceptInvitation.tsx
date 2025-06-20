@@ -1,18 +1,15 @@
 "use client";
-
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import api from "@/api/auth";
 import { DASHBOARD } from "@/lib/constant/Route";
+import { toast } from "sonner";
 
 export default function AcceptInvite({ inviteToken }: { inviteToken: string }) {
   const searchParams = useSearchParams();
   const [status, setStatus] = useState<"idle" | "success" | "error">("idle");
   const [message, setMessage] = useState("");
-
-
-  
 
   useEffect(() => {
     const acceptInvitation = async () => {
@@ -33,7 +30,7 @@ export default function AcceptInvite({ inviteToken }: { inviteToken: string }) {
         });
 
         setStatus("success");
-        setMessage("Invitation accepted! Redirecting to your dashboard...");
+        toast.success("Invitation accepted! Redirecting to your dashboard...")
 
         setTimeout(() => {
           window.location.href = DASHBOARD;
@@ -41,6 +38,7 @@ export default function AcceptInvite({ inviteToken }: { inviteToken: string }) {
       } catch (err: any) {
         setStatus("error");
         setMessage(err.response?.data?.msg || "Failed to accept invitation.");
+        toast.error("Failed to accept invitation.")
       }
     };
 

@@ -10,6 +10,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Eye, EyeOff, Loader2 } from "lucide-react"
 import api from "@/api/auth"
 import { useRouter } from "next/navigation";
+import { toast } from "sonner"
 
 export default function RegisterForm() {
   const [showPassword, setShowPassword] = useState(false)
@@ -41,14 +42,17 @@ export default function RegisterForm() {
 
     setStatus({
       type: "success",
-      message: response.data.msg || "Registration successful! Please check your email to verify your account.",
+      message: response.data.msg,
     })
+
+    toast.success( "Registration successful! Please check your email to verify your account.")
 
   } catch (error: any) {
     setStatus({
       type: "error",
       message: error?.response?.data?.msg || "Registration failed. Please try again."
     })
+    toast.error("Registeration Failed")
   } finally {
     setSubmitting(false)
   }

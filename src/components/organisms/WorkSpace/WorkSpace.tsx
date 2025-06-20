@@ -9,6 +9,7 @@ import { TeamInvitation } from "../TeamInvitaion/TeamInvitation"
 import { ProjectDashboard } from "../ProjectDashboard/ProjectDashboard"
 import { Building2 } from "lucide-react"
 import api from "@/api/auth"
+import { toast } from "sonner"
 
 interface WorkspaceSetupProps {
   usageMode: "ALONE" | "TEAM"
@@ -23,26 +24,31 @@ export function WorkspaceSetup({ usageMode }: WorkspaceSetupProps) {
   const handleCreateWorkspace = async () => {
     if (!workspaceName.trim()) return
 
-    setIsCreating(true)
+    try {
+      setIsCreating(true)
+      const payload = {
+        name: workspaceName,
+        usageMode
+      }
 
+      const token = localStorage.getItem("token");
 
-    const payload = {
-      name: workspaceName,
-      usageMode
+      const response = await api.post("/workspace/create", payload, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      setWorkspace(response.data.workspace);
+      toast.success("Workspace created sccussfully");
+
+      setStep(usageMode === "TEAM" ? "invite" : "dashboard");
+
+      setStep(usageMode === "TEAM" ? "invite" : "dashboard")
+    } catch (err : any) {
+      toast(err.response?.data?.msg || "Failed to create Workspace");
+
     }
-
-    const token = localStorage.getItem("token");
-
-    const response = await api.post("/workspace/create", payload, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    setWorkspace(response.data.workspace);
-    setStep(usageMode === "TEAM" ? "invite" : "dashboard");
-
-    setStep(usageMode === "TEAM" ? "invite" : "dashboard")
 
   }
 

@@ -1,7 +1,7 @@
 "use client";
 import { Loading } from "@/components/molecules/Loading/Loading";
 import { useAuth } from "@/hooks/useAuth";
-import { DASHBOARD, FORGET_PASSWORD, LOGIN, ONBOARDING, REGISTER } from "@/lib/constant/Route";
+import { DASHBOARD, LOGIN, ONBOARDING, } from "@/lib/constant/Route";
 import { useRouter, usePathname } from "next/navigation";
 import React, { ReactNode, useEffect } from "react";
 
@@ -14,11 +14,9 @@ const AuthLayout = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     if (!loading) {
-      if (!user) {
-        router.push(LOGIN);
-      } else if (user && !isOnBoarded && pathname !== ONBOARDING) {
+      if (user && !isOnBoarded) {
         router.push(ONBOARDING);
-      } else if (user && isOnBoarded && pathname !== DASHBOARD) {
+      } else if (user && isOnBoarded) {
         router.push(DASHBOARD);
       }
     }

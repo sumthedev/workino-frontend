@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useRouter } from "next/navigation";
 import { LOGIN } from "@/lib/constant/Route";
+import { toast } from "sonner";
 
 export default function VerifyEmailPage() {
   const [email, setEmail] = useState("");
@@ -22,8 +23,9 @@ export default function VerifyEmailPage() {
     const res = await api.post("/auth/verify-email", { email, code: code.trim() });
     setStatus(res.data.msg);
     router.push(LOGIN)
+    toast.success("verification done")
   } catch (err: any) {
-    setStatus(err.response?.data?.msg || "Verification failed");
+   toast.error("verifiaction failed")
   } finally {
     setLoading(false);
   }

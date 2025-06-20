@@ -4,18 +4,23 @@ import { WorkspaceCard } from "@/components/molecules/WorkspaceCard/WorkspaceCar
 import React, { useState, useEffect } from "react"
 import { ProjectDashboard } from "@/components/organisms/ProjectDashboard/ProjectDashboard"
 import { WorkspaceData } from "@/lib/constant/type"
+import { Button } from "@/components/ui/button"
+import { useRouter } from "next/navigation"
+import { toast } from "sonner"
 
 function WorkspacePage() {
   const [workspaces, setWorkspaces] = useState<WorkspaceData[]>([])
   const [selectedWorkspace, setSelectedWorkspace] = useState<WorkspaceData | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const router = useRouter();
+
 
   const fetchWorkspace = async () => {
     try {
       setLoading(true)
       const token = localStorage.getItem("token")
-   
+
       const response = await api.get("/workspace/all", {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -24,7 +29,7 @@ function WorkspacePage() {
 
       const workspaceList = response.data.workspace
       if (!Array.isArray(workspaceList) || workspaceList.length === 0) {
-        setError("No workspaces found")
+        toast.error("No workspaces found")
         return
       }
 
@@ -32,14 +37,18 @@ function WorkspacePage() {
       setError(null)
     } catch (err: any) {
       console.error("Error fetching workspace:", err)
-       if (err.response?.status === 404) {
-        setError("No workspace found")
+      if (err.response?.status === 404) {
+      toast.error("No workspaces found")
       } else {
-        setError("Failed to load workspaces")
+       toast.error("Failed to load workspace")
       }
     } finally {
       setLoading(false)
     }
+  }
+
+  const handleWorkspace = () => {
+    router.push("/workspace")
   }
 
   useEffect(() => {
@@ -61,8 +70,14 @@ function WorkspacePage() {
 
   if (error) {
     return (
-      <div className="flex justify-center items-center h-64">
-        <div className="text-red-500">{error}</div>
+      <div className="justify-center flex gap-4 flex-col items-center h-64">
+        <div className="text-red-500">No Worksapce Found</div>
+        <div>
+          <Button onClick={handleWorkspace}>
+            Create Workspace
+          </Button>
+        </div>
+
       </div>
     )
   }

@@ -18,10 +18,10 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
-import { ProjectView } from "../ProjectView/ProjectView"
 import { Plus, FolderPlus, Users, User, Settings, Loader2 } from "lucide-react"
 import api from "@/api/auth"
 import { toast } from "sonner"
+import { ProjectView } from "@/components/organisms/ProjectView/ProjectView"
 
 interface ProjectDashboardProps {
   workspace: any
@@ -37,7 +37,7 @@ interface Project {
   tasksCount?: number
 }
 
-export function ProjectDashboard({ workspace, usageMode }: ProjectDashboardProps) {
+ function page({ workspace, usageMode }: ProjectDashboardProps) {
   const [projects, setProjects] = useState<Project[]>([])
   const [selectedProject, setSelectedProject] = useState<Project | null>(null)
   const [newProjectName, setNewProjectName] = useState("")
@@ -54,14 +54,13 @@ export function ProjectDashboard({ workspace, usageMode }: ProjectDashboardProps
           Authorization: `Bearer ${token}`,
         },
       })
-
-      const projectsData = response.data?.projects || [];
-      const filteredProjects = projectsData.filter((project: any) => project.usageMode === usageMode);
-      setProjects(filteredProjects);
-
+      
+      const projectsData = response.data?.projects || []
+      setProjects(Array.isArray(projectsData) ? projectsData : [])
     } catch (error) {
+      console.error("Error loading projects:", error)
       toast.error("Failed to load projects")
-      setProjects([])
+      setProjects([]) 
     } finally {
       setIsLoading(false)
     }
@@ -69,7 +68,7 @@ export function ProjectDashboard({ workspace, usageMode }: ProjectDashboardProps
 
   useEffect(() => {
     if (workspace?.id) {
-      fetchProjects();
+      fetchProjects()
     }
   }, [workspace?.id])
 
@@ -100,7 +99,7 @@ export function ProjectDashboard({ workspace, usageMode }: ProjectDashboardProps
       })
 
       await fetchProjects()
-
+      
       setNewProjectName("")
       setShowCreateDialog(false)
       toast.success("Project created successfully")
@@ -214,6 +213,8 @@ export function ProjectDashboard({ workspace, usageMode }: ProjectDashboardProps
             </DialogContent>
           </Dialog>
         </div>
+
+        {/* Loading State */}
         {isLoading ? (
           <Card className="text-center py-12">
             <CardContent>
@@ -265,3 +266,5 @@ export function ProjectDashboard({ workspace, usageMode }: ProjectDashboardProps
     </div>
   )
 }
+
+export default page;

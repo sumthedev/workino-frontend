@@ -14,6 +14,7 @@ import api from "@/api/auth"
 import { useRouter } from "next/navigation"
 import { DASHBOARD, FORGET_PASSWORD, LOGIN, ONBOARDING, REGISTER } from "@/lib/constant/Route"
 import Link from "next/link"
+import { toast } from "sonner"
 
 export default function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
@@ -40,13 +41,13 @@ export default function LoginForm() {
       setStatus({
       type: "success",
       message: response.data.msg || "Login Successfull",
-
     })
 
+     toast.success("Login successfull")
      router.push(ONBOARDING)
 
     } catch (error) {
-      setStatus({ type: "error", message: "Invalid email or password. Please try again." })
+      toast.success("Invalid email or password. Please try again.")
     } finally {
       setSubmitting(false)
     }
