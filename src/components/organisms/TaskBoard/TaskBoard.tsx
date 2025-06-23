@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -18,6 +18,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea"
 import { ArrowLeft, Plus, Clock, CheckCircle2, Circle, UserPlus } from "lucide-react"
 import { useRouter } from "next/navigation"
+import api from "@/api/auth"
+import { toast } from "sonner"
+
 interface TaskBoardProps {
   team: any
   project: any
@@ -37,15 +40,23 @@ interface Task {
   createdAt: string
 }
 
+interface TeamMember {
+  id: string, 
+  fullName: string,
+  email: string,
+  role: string
+}
+
 const mockUser = { id: "user-1", name: "John Doe", email: "john@example.com" }
 
 export function TaskBoard({ team, project, workspace, usageMode, onBack }: TaskBoardProps) {
   const [tasks, setTasks] = useState<Task[]>([])
   const [showCreateDialog, setShowCreateDialog] = useState(false)
+  const [members, setMembers] = useState<TeamMember[]>([]);
   const [newTask, setNewTask] = useState({
     title: "",
     description: "",
-    priority: "NORMAL" as const,
+    priority: "NORMAL" as Task["priority"],
     assignedToId: "unassigned",
   })
   const [isCreating, setIsCreating] = useState(false)
@@ -56,26 +67,62 @@ export function TaskBoard({ team, project, workspace, usageMode, onBack }: TaskB
 
     setIsCreating(true)
 
-    setTimeout(() => {
-      const task: Task = {
-        id: "task-" + Date.now(),
+    try {
+      const payload = {
         title: newTask.title,
         description: newTask.description,
-        status: "TODO",
         priority: newTask.priority,
-        assignedTo: newTask.assignedToId === "unassigned" ? undefined : mockUser,
-        createdBy: mockUser,
-        createdAt: new Date().toISOString(),
+        assignedToId: newTask.assignedToId === "unassigned" ? undefined : newTask.assignedToId,
+        teamId: team.id
       }
-      setTasks([...tasks, task])
-      setNewTask({ title: "", description: "", priority: "NORMAL", assignedToId: "unassigned" })
+
+      const token = localStorage.getItem("token")
+
+      const response = await api.post("/task/create", payload, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+
+      // Add the new task to the local state
+      const newTaskData: Task = {
+        id: response.data.task.id,
+        title: response.data.task.title,
+        description: response.data.task.description,
+        status: "TODO",
+        priority: response.data.task.priority,
+        assignedTo: response.data.task.assignedTo,
+        createdBy: response.data.task.createdBy,
+        createdAt: response.data.task.createdAt,
+      }
+
+      setTasks([...tasks, newTaskData])
+      setNewTask({ title: "", description: "", priority: "NORMAL" as Task["priority"], assignedToId: "unassigned" })
       setShowCreateDialog(false)
+      toast.success("Task created successfully!")
+    } catch (err: any) {
+      toast.error(err.response?.data?.msg || "Failed to create task")
+    } finally {
       setIsCreating(false)
-    }, 1000)
+    }
   }
 
-  const handleStatusChange = (taskId: string, newStatus: Task["status"]) => {
-    setTasks(tasks.map((task) => (task.id === taskId ? { ...task, status: newStatus } : task)))
+  const handleStatusChange = async (taskId: string, newStatus: Task["status"]) => {
+    try {
+      const token = localStorage.getItem("token")
+      await api.put(`/task/update/${taskId}`, 
+        { status: newStatus },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      )
+      setTasks(tasks.map((task) => (task.id === taskId ? { ...task, status: newStatus } : task)))
+      toast.success("Task status updated!")
+    } catch (err: any) {
+      toast.error(err.response?.data?.msg || "Failed to update task")
+    }
   }
 
   const getStatusIcon = (status: Task["status"]) => {
@@ -111,6 +158,44 @@ export function TaskBoard({ team, project, workspace, usageMode, onBack }: TaskB
     PENDING: tasks.filter((task) => task.status === "PENDING"),
     DONE: tasks.filter((task) => task.status === "DONE"),
   }
+
+  const fetchTasks = async () => {
+    try {
+      const token = localStorage.getItem("token")
+      const response = await api.get(`/task/${team.id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      setTasks(response.data)
+    } catch (err: any) {
+      toast.error(err.response?.data?.msg || "Failed to fetch tasks")
+    }
+  }
+
+  const fetchTeamMembers = async () => {
+    try {
+        const token = localStorage.getItem("token");
+
+      const response = await api.get("/team/members", {
+        params: { teamId : team.id },
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const members = response.data.members || [];
+      setMembers(members);
+
+    } catch (err : any) {
+      toast.error(err.response?.data?.msg )
+    }
+  }
+
+  useEffect(() => {
+    fetchTeamMembers()
+    fetchTasks()
+  }, [team.id])
 
   return (
     <div className="min-h-screen bg-background">
@@ -171,7 +256,7 @@ export function TaskBoard({ team, project, workspace, usageMode, onBack }: TaskB
                       <Label>Priority</Label>
                       <Select
                         value={newTask.priority}
-                        // onValueChange={(value: Task["priority"]) => setNewTask({ ...newTask, priority: value })}
+                        onValueChange={(value: Task["priority"]) => setNewTask({ ...newTask, priority: value })}
                       >
                         <SelectTrigger>
                           <SelectValue />
@@ -196,7 +281,9 @@ export function TaskBoard({ team, project, workspace, usageMode, onBack }: TaskB
                           </SelectTrigger>
                           <SelectContent>
                             <SelectItem value="unassigned">Unassigned</SelectItem>
-                            <SelectItem value="user-1">John Doe</SelectItem>
+                            {members.map((member) => (
+                              <SelectItem key={member.id} value={member.id}>{member.fullName}</SelectItem>
+                            ))}
                           </SelectContent>
                         </Select>
                       </div>

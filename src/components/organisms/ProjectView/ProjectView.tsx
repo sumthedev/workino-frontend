@@ -17,6 +17,8 @@ import {
 import { TaskBoard } from "../TaskBoard/TaskBoard"
 import { ArrowLeft, Plus, Users, User, Calendar, CheckCircle2 } from "lucide-react"
 import api from "@/api/auth"
+import { toast } from "sonner"
+import { useAuth } from "@/hooks/useAuth"
 
 interface ProjectViewProps {
   project: any
@@ -42,6 +44,7 @@ export function ProjectView({ project, workspace, usageMode, onBack }: ProjectVi
   const [newTeamName, setNewTeamName] = useState("")
   const [isCreating, setIsCreating] = useState(false)
   const [showCreateDialog, setShowCreateDialog] = useState(false)
+  const { user } = useAuth();
 
   const handleCreateTeam = async () => {
     if (!newTeamName.trim()) return;
@@ -53,6 +56,7 @@ export function ProjectView({ project, workspace, usageMode, onBack }: ProjectVi
       const payload = {
         name: newTeamName,
         projectId: project.id,
+        email: user?.email
       };
 
 
@@ -74,8 +78,8 @@ export function ProjectView({ project, workspace, usageMode, onBack }: ProjectVi
       setTeams((prev) => [...prev, teamWithCounts]);
       setNewTeamName("");
       setShowCreateDialog(false);
-    } catch (error) {
-      console.error("Failed to create team:", error);
+    } catch (error : any) {
+       toast.error("Failed to create team:", error);
     } finally {
       setIsCreating(false);
     }
@@ -97,11 +101,11 @@ useEffect(() => {
         response.data.teams.map((team: any) => ({
           ...team,
           membersCount: team.members?.length || 1,
-          tasksCount: 0, // You can replace this if needed
+          tasksCount: 0, 
         }))
       );
-    } catch (error) {
-      console.error("Failed to fetch team:", error);
+    } catch (err : any) {
+     toast.error(err.response?.data?.msg )
     }
   };
 

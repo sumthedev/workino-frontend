@@ -11,6 +11,7 @@ import { Badge } from "@/components/ui/badge"
 import { Trash2, Mail, Users, Plus, Check } from "lucide-react"
 import { Project, WorkspaceData } from "@/lib/constant/type"
 import api from "@/api/auth"
+import { toast } from "sonner"
 
 interface TeamMember {
   id: string
@@ -63,28 +64,31 @@ export default function InviteTeamMembers({
 
   const addMember = async () => {
 
-    const payload = {
-      email: email,
-      role: role,
-      teamId: selectedTeamId,
+    try {
+      const payload = {
+        email: email,
+        role: role,
+        teamId: selectedTeamId,
+      }
+      const token = localStorage.getItem("token");
+      const res = await api.post("/invite", payload, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+
+      setMembers([...members, {
+        id: Math.random().toString(36).substr(2, 9),
+        email,
+        role,
+        status: "pending",
+      }])
+      setEmail("")
+      setRole("MEMBER")
+
+    } catch (err: any) {
+      toast.error(err.response?.data?.msg)
     }
-    const token = localStorage.getItem("token");
-    const res = await api.post("/invite", payload, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-
-    console.log(res);
-    
-
-    setMembers([...members, {
-      id: Math.random().toString(36).substr(2, 9),
-      email,
-      role,
-      status: "pending",
-    }])
-    setEmail("")
-    setRole("MEMBER")
   }
+
 
   const removeMember = (id: string) => {
     setMembers(members.filter((m) => m.id !== id))
@@ -99,8 +103,9 @@ export default function InviteTeamMembers({
         setMembers(prev => prev.map((m) => m.id === members[i].id ? { ...m, status: "sent" } : m))
       }
       setStep("complete")
-    } catch (err) {
-      console.error("Failed to send invites")
+      toast.success("Team created successfully");
+    } catch (err: any) {
+      toast.error(err.response?.data?.msg)
     } finally {
       setIsLoading(false)
     }
@@ -112,8 +117,6 @@ export default function InviteTeamMembers({
       addMember()
     }
   }
-
-  console.log(selectedTeamId);
 
   const selectedTeam = teams.find((t) => t.id === selectedTeamId)
 
