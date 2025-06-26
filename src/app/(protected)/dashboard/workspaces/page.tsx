@@ -36,7 +36,7 @@ function WorkspacePage() {
       setWorkspaces(workspaceList)
       setError(null)
     } catch (err: any) {
-      console.error("Error fetching workspace:", err)
+       toast.error("Error load workspace")
       if (err.response?.status === 404) {
       toast.error("No workspaces found")
       } else {

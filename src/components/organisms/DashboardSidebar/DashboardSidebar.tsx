@@ -24,16 +24,17 @@ import {
   Users,
   Settings,
   FileText,
-  Calendar,
   Bell,
   Search,
   Plus,
   LogOut,
   User,
   ChevronUp,
+  Contact2,
 } from "lucide-react"
 import { ModeToggle } from "@/components/molecules/ModeToggle/ModeToggle"
 import { LOGIN } from "@/lib/constant/Route"
+import { useAuth } from "@/hooks/useAuth"
 
 const menuItems = [
   {
@@ -48,13 +49,19 @@ const menuItems = [
   },
   {
     title: "Pages",
-    url: "/pages",
+    url: "/dashboard/all-pages",
     icon: FileText,
   },
   {
     title: "Team",
-    url: "/team",
+    url: "/dashboard/team",
     icon: Users,
+  },
+
+  {
+    title: "Invite Members",
+    url: "/invite",
+    icon: Contact2,
   },
 ]
 
@@ -62,31 +69,29 @@ const quickActions = [
   {
     title: "New Page",
     icon: Plus,
-    action: "create-page",
+    url: "/new-page",
   },
   {
     title: "Search",
     icon: Search,
-    action: "search",
+    url: "search",
   },
   {
     title: "Notifications",
     icon: Bell,
-    action: "notifications",
+    url: "notifications",
+  },
+    {
+    title: "Create New Workspace",
+    icon: Plus,
+    url: "/workspace",
   },
 ]
 
-interface DashboardSidebarProps {
-  children: React.ReactNode
-  user?: {
-    name: string
-    email: string
-    avatar?: string
-  }
-}
 
-export function DashboardSidebar({ children, user }: DashboardSidebarProps) {
-  const router = useRouter()
+export function DashboardSidebar() {
+  const router = useRouter();
+  const {user} = useAuth()
 
   const handleLogout = () => {
     if (typeof window !== "undefined") {
@@ -103,10 +108,10 @@ export function DashboardSidebar({ children, user }: DashboardSidebarProps) {
         .join("")
         .toUpperCase() || "U"
     )
-  }
+  } 
 
   return (
-    <SidebarProvider>
+
       <Sidebar>
         <SidebarHeader>
           <SidebarMenu>
@@ -146,7 +151,7 @@ export function DashboardSidebar({ children, user }: DashboardSidebarProps) {
                   <SidebarMenuItem key={item.title}>
                     <SidebarMenuButton>
                       <item.icon />
-                      <span>{item.title}</span>
+                      <a href={item.url}><span>{item.title}</span> </a>    
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 ))}
@@ -160,7 +165,7 @@ export function DashboardSidebar({ children, user }: DashboardSidebarProps) {
               <SidebarMenu>
                 <SidebarMenuItem>
                   <SidebarMenuButton asChild>
-                    <a href="/settings">
+                    <a href="/dashboard/settings">
                       <Settings />
                       <span>Settings</span>
                     </a>
@@ -176,13 +181,13 @@ export function DashboardSidebar({ children, user }: DashboardSidebarProps) {
             <SidebarMenuItem>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <SidebarMenuButton className="w-full">
+                  <SidebarMenuButton className="w-full h-22">
                     <Avatar className="h-6 w-6">
-                      <AvatarImage src={user?.avatar || `https://avatar.vercel.sh/${user?.email}`} />
-                      <AvatarFallback>{getInitials(user?.name || "User")}</AvatarFallback>
+                      <AvatarImage src={`https://avatar.vercel.sh/${user?.email}`} />
+                      <AvatarFallback>{getInitials(user?.fullName || "User")}</AvatarFallback>
                     </Avatar>
                     <div className="flex flex-col items-start text-left">
-                      <span className="text-sm font-medium">{user?.name || "User"}</span>
+                      <span className="text-sm font-medium">{user?.fullName || "User"}</span>
                       <span className="text-xs text-muted-foreground">{user?.email}</span>
                     </div>
                     <ChevronUp className="ml-auto" />
@@ -195,6 +200,7 @@ export function DashboardSidebar({ children, user }: DashboardSidebarProps) {
                   </DropdownMenuItem>
                   <DropdownMenuItem>
                     <Settings className="mr-2 h-4 w-4" />
+
                     Settings
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={handleLogout}>
@@ -209,17 +215,7 @@ export function DashboardSidebar({ children, user }: DashboardSidebarProps) {
             <ModeToggle />
           </div>
         </SidebarFooter>
-      </Sidebar>
+      </Sidebar>   
 
-      <main className="flex-1">
-        <div className="flex h-16 items-center border-b px-4">
-          <SidebarTrigger />
-          <div className="ml-auto">
-            <ModeToggle />
-          </div>
-        </div>
-        <div className="flex-1 p-6">{children}</div>
-      </main>
-    </SidebarProvider>
   )
 }

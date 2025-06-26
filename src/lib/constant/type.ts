@@ -48,3 +48,12 @@ export interface WorkspaceData {
     email: string
   }
 }
+
+export interface Team {
+  id: string
+  name: string
+  projectId: string
+  createdAt: string
+  tasksCount: number
+  membersCount: number
+}
