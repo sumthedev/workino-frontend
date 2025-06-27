@@ -80,7 +80,7 @@ export default function Onboarding() {
       <Card className="w-[600px]">
         <CardHeader className="text-center space-y-2">
           <div className="mx-auto w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center mb-4">
-            <span className="text-white font-bold text-xl">W</span>
+            <span className=" font-bold text-xl">W</span>
           </div>
           <CardTitle className="text-2xl font-bold">
             {currentStep === 1 ? "Welcome to Workino" : "How will you use Workino?"}
@@ -97,7 +97,7 @@ export default function Onboarding() {
             <div className="space-y-4">
               <h3 className="text-lg font-semibold text-center mb-4">Why are you using Workino?</h3>
               <RadioGroup value={data.usageType || ""} onValueChange={handleUsageTypeSelect} className="space-y-3">
-                <div className="flex items-center space-x-3 p-4 rounded-lg border hover:bg-slate-50 transition-colors">
+                <div className="flex items-center space-x-3 p-4 rounded-lg border transition-colors">
                   <RadioGroupItem value="PERSONAL" id="personal" />
                   <Label htmlFor="personal" className="flex items-center space-x-3 cursor-pointer flex-1">
                     <Heart className="w-5 h-5 text-pink-500" />
@@ -108,7 +108,7 @@ export default function Onboarding() {
                   </Label>
                 </div>
 
-                <div className="flex items-center space-x-3 p-4 rounded-lg border hover:bg-slate-50 transition-colors">
+                <div className="flex items-center space-x-3 p-4 rounded-lg border transition-colors">
                   <RadioGroupItem value="PROFESSIONAL" id="professional" />
                   <Label htmlFor="professional" className="flex items-center space-x-3 cursor-pointer flex-1">
                     <Briefcase className="w-5 h-5 text-blue-500" />
@@ -119,7 +119,7 @@ export default function Onboarding() {
                   </Label>
                 </div>
 
-                <div className="flex items-center space-x-3 p-4 rounded-lg border hover:bg-slate-50 transition-colors">
+                <div className="flex items-center space-x-3 p-4 rounded-lg border  transition-colors">
                   <RadioGroupItem value="OTHER" id="other" />
                   <Label htmlFor="other" className="flex items-center space-x-3 cursor-pointer flex-1">
                     <HelpCircle className="w-5 h-5 text-gray-500" />
@@ -137,7 +137,7 @@ export default function Onboarding() {
             <div className="space-y-4">
               <h3 className="text-lg font-semibold text-center mb-4">Will you be working alone or with a team?</h3>
               <RadioGroup value={data.usageMode || ""} onValueChange={handleUsageModeSelect} className="space-y-3">
-                <div className="flex items-center space-x-3 p-4 rounded-lg border hover:bg-slate-50 transition-colors">
+                <div className="flex items-center space-x-3 p-4 rounded-lg bordertransition-colors">
                   <RadioGroupItem value="ALONE" id="alone" />
                   <Label htmlFor="alone" className="flex items-center space-x-3 cursor-pointer flex-1">
                     <User className="w-5 h-5 text-green-500" />
@@ -148,7 +148,7 @@ export default function Onboarding() {
                   </Label>
                 </div>
 
-                <div className="flex items-center space-x-3 p-4 rounded-lg border hover:bg-slate-50 transition-colors">
+                <div className="flex items-center space-x-3 p-4 rounded-lg bordertransition-colors">
                   <RadioGroupItem value="TEAM" id="team" />
                   <Label htmlFor="team" className="flex items-center space-x-3 cursor-pointer flex-1">
                     <Users className="w-5 h-5 text-purple-500" />

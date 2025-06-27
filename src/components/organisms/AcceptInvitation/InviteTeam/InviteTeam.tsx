@@ -9,7 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Badge } from "@/components/ui/badge"
 import { Trash2, Mail, Users, Plus, Check } from "lucide-react"
-import { Project, WorkspaceData } from "@/lib/constant/type"
+import type { Project, WorkspaceData } from "@/lib/constant/type"
 import api from "@/api/auth"
 import { toast } from "sonner"
 
@@ -54,41 +54,51 @@ export default function InviteTeamMembers({
   teams,
   loading,
   isLoadingTeams,
-  error
+  error,
 }: InviteTeamMembersProps) {
   const [email, setEmail] = useState("")
   const [role, setRole] = useState<"MEMBER" | "ADMIN">("MEMBER")
   const [members, setMembers] = useState<TeamMember[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [step, setStep] = useState<"setup" | "invite" | "complete">("setup")
+  const [isAddingMember, setIsAddingMember] = useState(false)
 
   const addMember = async () => {
+    if (!email.trim()) {
+      toast.error("Please enter an email address")
+      return
+    }
 
+    setIsAddingMember(true)
     try {
       const payload = {
         email: email,
         role: role,
         teamId: selectedTeamId,
       }
-      const token = localStorage.getItem("token");
+      const token = localStorage.getItem("token")
       const res = await api.post("/invite", payload, {
         headers: { Authorization: `Bearer ${token}` },
       })
 
-      setMembers([...members, {
-        id: Math.random().toString(36).substr(2, 9),
-        email,
-        role,
-        status: "pending",
-      }])
+      setMembers([
+        ...members,
+        {
+          id: Math.random().toString(36).substr(2, 9),
+          email,
+          role,
+          status: "pending",
+        },
+      ])
       setEmail("")
       setRole("MEMBER")
-
+      toast.success("Member added successfully")
     } catch (err: any) {
-      toast.error(err.response?.data?.msg)
+      toast.error(err.response?.data?.msg || "Failed to add member")
+    } finally {
+      setIsAddingMember(false)
     }
   }
-
 
   const removeMember = (id: string) => {
     setMembers(members.filter((m) => m.id !== id))
@@ -100,10 +110,10 @@ export default function InviteTeamMembers({
     try {
       for (let i = 0; i < members.length; i++) {
         await new Promise((r) => setTimeout(r, 500))
-        setMembers(prev => prev.map((m) => m.id === members[i].id ? { ...m, status: "sent" } : m))
+        setMembers((prev) => prev.map((m) => (m.id === members[i].id ? { ...m, status: "sent" } : m)))
       }
       setStep("complete")
-      toast.success("Team created successfully");
+      toast.success("Team created successfully")
     } catch (err: any) {
       toast.error(err.response?.data?.msg)
     } finally {
@@ -139,9 +149,7 @@ export default function InviteTeamMembers({
         <CardContent className="flex items-center justify-center py-8">
           <div className="text-center">
             <p className="text-destructive mb-4">{error}</p>
-            <Button onClick={() => window.location.reload()}>
-              Try Again
-            </Button>
+            <Button onClick={() => window.location.reload()}>Try Again</Button>
           </div>
         </CardContent>
       </Card>
@@ -156,9 +164,7 @@ export default function InviteTeamMembers({
             <Check className="w-6 h-6 text-green-600" />
           </div>
           <CardTitle className="text-2xl">Invitations Sent Successfully!</CardTitle>
-          <CardDescription>
-            Invitations have been sent to all members for team "{selectedTeam?.name}".
-          </CardDescription>
+          <CardDescription>Invitations have been sent to all members for team "{selectedTeam?.name}".</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="bg-muted p-4 rounded-lg">
@@ -204,7 +210,9 @@ export default function InviteTeamMembers({
                 </SelectTrigger>
                 <SelectContent>
                   {workspaces.map((w) => (
-                    <SelectItem key={w.id} value={w.id}>{w.name}</SelectItem>
+                    <SelectItem key={w.id} value={w.id}>
+                      {w.name}
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -218,7 +226,9 @@ export default function InviteTeamMembers({
                 </SelectTrigger>
                 <SelectContent>
                   {projects.map((p) => (
-                    <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
+                    <SelectItem key={p.id} value={p.id}>
+                      {p.name}
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -271,8 +281,12 @@ export default function InviteTeamMembers({
               </Select>
             </div>
             <div className="flex items-end">
-              <Button onClick={addMember} size="icon">
-                <Plus className="w-4 h-4" />
+              <Button onClick={addMember} size="icon" disabled={isAddingMember || !email.trim() || !selectedTeamId}>
+                {isAddingMember ? (
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                ) : (
+                  <Plus className="w-4 h-4" />
+                )}
               </Button>
             </div>
           </div>
@@ -324,11 +338,7 @@ export default function InviteTeamMembers({
               <Button variant="outline" onClick={() => setStep("setup")} disabled={isLoading}>
                 Back
               </Button>
-              <Button
-                onClick={sendInvitesToTeam}
-                disabled={isLoading || members.length === 0}
-                className="flex-1"
-              >
+              <Button onClick={sendInvitesToTeam} disabled={isLoading || members.length === 0} className="flex-1">
                 {isLoading ? "Sending..." : `Send ${members.length} Invite(s)`}
               </Button>
             </>

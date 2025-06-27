@@ -84,57 +84,36 @@ function WorkspacePage() {
 
   if (error === "no_workspaces") {
     return (
-      <div className="min-h-[60vh] flex items-center justify-center p-6">
+      <div className="flex items-center justify-center p-6">
         <Card className="w-full max-w-2xl">
           <CardContent className="p-12 text-center space-y-8">
-            {/* Icon and Illustration */}
             <div className="relative">
               <div className="mx-auto w-24 h-24 bg-primary/10 rounded-full flex items-center justify-center mb-6">
                 <Building2 className="h-12 w-12 text-primary" />
               </div>
-              <div className="absolute -top-2 -right-2 w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                <Plus className="h-4 w-4 text-blue-600" />
-              </div>
             </div>
-
-            {/* Main Message */}
             <div className="space-y-4">
-              <h1 className="text-3xl font-bold text-foreground">Welcome to Your Workspace Hub</h1>
-              <p className="text-lg text-muted-foreground max-w-md mx-auto">
-                You don't have any workspaces yet. Create your first workspace to start collaborating with your team and
-                organizing your projects.
+              <h1 className="text-xl font-bold text-foreground">Welcome to Your Workspace Hub</h1>
+              <p className="text-sm text-muted-foreground max-w-md mx-auto">
+              No workspaces yet. Create one to start collaborating and organizing projects.
               </p>
             </div>
-
-            {/* Features */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 my-8">
               <div className="space-y-2">
-                <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mx-auto">
-                  <Users className="h-6 w-6 text-green-600" />
-                </div>
                 <h3 className="font-semibold">Team Collaboration</h3>
-                <p className="text-sm text-muted-foreground">Invite team members and work together seamlessly</p>
+                <p className="text-sm text-muted-foreground">Invite team members and work together</p>
               </div>
               <div className="space-y-2">
-                <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mx-auto">
-                  <Briefcase className="h-6 w-6 text-purple-600" />
-                </div>
                 <h3 className="font-semibold">Project Management</h3>
-                <p className="text-sm text-muted-foreground">Organize and manage all your projects in one place</p>
+                <p className="text-sm text-muted-foreground">Manage all your projects in one place</p>
               </div>
               <div className="space-y-2">
-                <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mx-auto">
-                  <Building2 className="h-6 w-6 text-orange-600" />
-                </div>
-                <h3 className="font-semibold">Workspace Organization</h3>
-                <p className="text-sm text-muted-foreground">Keep your work organized with dedicated workspaces</p>
+                <h3 className="font-semibold">Workspace Setup</h3>
+                <p className="text-sm text-muted-foreground">Keep your work organized with workspaces</p>
               </div>
             </div>
-
-            {/* Call to Action */}
             <div className="space-y-4">
-              <Button onClick={handleCreateWorkspace} size="lg" className="px-8 py-3 text-lg">
-                <Plus className="mr-2 h-5 w-5" />
+              <Button onClick={handleCreateWorkspace} className="px-8 py-3 text-md">         
                 Create Your First Workspace
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>

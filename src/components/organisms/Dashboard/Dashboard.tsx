@@ -6,10 +6,22 @@ import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Badge } from "@/components/ui/badge"
 import { LOGIN, WORKSPACE } from "@/lib/constant/Route"
-import { Building2, Users, Plus, FolderOpen, FileText, Calendar, User } from "lucide-react"
+import {
+  Building2,
+  Users,
+  Plus,
+  FolderOpen,
+  FileText,
+  Calendar,
+  User,
+  RefreshCw,
+  ArrowRight,
+  Briefcase,
+  Target,
+} from "lucide-react"
 import api from "@/api/auth"
 import { toast } from "sonner"
-import { Page, Project, Team, WorkspaceData } from "@/lib/constant/type"
+import type { Page, Project, Team, WorkspaceData } from "@/lib/constant/type"
 
 function Dashboard() {
   const router = useRouter()
@@ -25,25 +37,25 @@ function Dashboard() {
   const [teams, setTeams] = useState<Team[]>([])
   const [teamsLoading, setTeamsLoading] = useState(false)
 
-
   const stripHtmlTags = (html: string) => {
-    if (!html) return 'No content'
-    const stripped = html.replace(/<[^>]*>/g, '')
+    if (!html) return "No content"
+    const stripped = html.replace(/<[^>]*>/g, "")
     const decoded = stripped
-      .replace(/&amp;/g, '&')
-      .replace(/&lt;/g, '<')
-      .replace(/&gt;/g, '>')
+      .replace(/&amp;/g, "&")
+      .replace(/&lt;/g, "<")
+      .replace(/&gt;/g, ">")
       .replace(/&quot;/g, '"')
       .replace(/&#39;/g, "'")
-      .replace(/&nbsp;/g, ' ')
-    
-    return decoded.trim() || 'No content'
+      .replace(/&nbsp;/g, " ")
+
+    return decoded.trim() || "No content"
   }
 
   const fetchWorkspace = async () => {
     try {
       setLoading(true)
-    
+      setError(null)
+
       const token = localStorage.getItem("token")
       const response = await api.get("/workspace/all", {
         headers: { Authorization: `Bearer ${token}` },
@@ -54,22 +66,20 @@ function Dashboard() {
         setWorkspaces(allWorkspaces)
         const firstWorkspace = allWorkspaces[0]
         setCurrentWorkspace(firstWorkspace)
-        
         setUser(firstWorkspace.owner)
       } else {
         setWorkspaces([])
         setCurrentWorkspace(null)
-        toast.error("No workspace found")
+        setError("no_workspaces")
       }
-      
-      setError(null)
     } catch (err: any) {
-      toast.error("Error fetching workspace:", err)
+      console.error("Error fetching workspace:", err)
       if (err.response?.status === 401) {
         handleLogout()
       } else if (err.response?.status === 404) {
-        toast.error("No workspace found")
+        setError("no_workspaces")
       } else {
+        setError("fetch_error")
         toast.error("Failed to load workspace")
       }
     } finally {
@@ -92,7 +102,6 @@ function Dashboard() {
       if (projectsData.length > 0) {
         await fetchTeams(projectsData[0].id)
       }
-      
     } catch (error) {
       toast.error("Failed to load projects")
       setProjects([])
@@ -135,7 +144,7 @@ function Dashboard() {
           ...team,
           membersCount: team.members?.length || 1,
           tasksCount: 0,
-        }))
+        })),
       )
     } catch (err: any) {
       toast.error(err.response?.data?.msg || "Failed to load teams")
@@ -167,11 +176,15 @@ function Dashboard() {
     router.push(WORKSPACE)
   }
 
+  const handleRetry = () => {
+    fetchWorkspace()
+  }
+
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
+    return new Date(dateString).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
     })
   }
 
@@ -188,16 +201,105 @@ function Dashboard() {
     )
   }
 
-  return (
-    <div>
-      <div className="space-y-4">
-        <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
-        <p className="text-muted-foreground mb-6">Welcome back! Here's what's happening in your workspace.</p>
+  if (error === "no_workspaces") {
+    return (
+      <div className="flex items-center justify-center p-6">
+        <Card className="w-full max-w-3xl">
+          <CardContent className="p-6 text-center space-y-8">
+            <div className="pt-8 border-t">
+              <div className="relative">
+              </div>
+              <div className="space-y-4">
+                <h1 className="text-3xl font-bold text-foreground">Welcome to Your Dashboard</h1>
+                <p className="text-sm text-muted-foreground max-w-2xl mx-auto">
+                  No workspaces yet. Create one to organize projects, collaborate, and manage work efficiently
+                </p>
+              </div>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 my-8">
+              <div className="space-y-3">
+                <h3 className="font-semibold">Project Management</h3>
+                <p className="text-sm text-muted-foreground">
+                  Organize and track all your projects 
+                </p>
+              </div>
+              <div className="space-y-3">
+                <h3 className="font-semibold">Team Collaboration</h3>
+                <p className="text-sm text-muted-foreground">
+                  Invite team members and collaborate 
+                </p>
+              </div>
+              <div className="space-y-3">
+                <h3 className="font-semibold">Goal Tracking</h3>
+                <p className="text-sm text-muted-foreground">Set goals and achieve your objectives</p>
+              </div>
+            </div>
+            <div className="space-y-4">
+              <Button onClick={handleWorkspaceSelect} size="lg" className="px-8 py-3 text-lg">
+                Create Your First Workspace
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </Button>
+              <p className="text-sm text-muted-foreground">
+                Get started in less than a minute and unlock the full potential of your team
+              </p>
+            </div>
+            <div className="grid grid-cols-3 gap-4 pt-8 border-t">
+              <div className="text-center">
+                <div className="text-2xl font-bold text-primary">0</div>
+                <div className="text-xs text-muted-foreground">Workspaces</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-primary">0</div>
+                <div className="text-xs text-muted-foreground">Projects</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-primary">0</div>
+                <div className="text-xs text-muted-foreground">Team Members</div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       </div>
+    )
+  }
 
-      {error ? (
-        <div>no workspace</div>
-      ) : currentWorkspace ? (
+  if (error === "fetch_error") {
+    return (
+      <div className="min-h-[60vh] flex items-center justify-center p-6">
+        <Card className="w-full max-w-md">
+          <CardContent className="p-8 text-center space-y-6">
+            <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto">
+              <Building2 className="h-8 w-8 text-red-600" />
+            </div>
+            <div className="space-y-2">
+              <h2 className="text-xl font-semibold text-foreground">Unable to Load Dashboard</h2>
+              <p className="text-muted-foreground">
+                We're having trouble loading your dashboard. Please check your connection and try again.
+              </p>
+            </div>
+            <div className="space-y-3">
+              <Button onClick={handleRetry} variant="outline" className="w-full bg-transparent">
+                <RefreshCw className="mr-2 h-4 w-4" />
+                Try Again
+              </Button>
+              <Button onClick={handleWorkspaceSelect} className="w-full">
+                <Plus className="mr-2 h-4 w-4" />
+                Create New Workspace
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    )
+  }
+  if (currentWorkspace) {
+    return (
+      <div>
+        <div className="space-y-4">
+          <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
+          <p className="text-muted-foreground mb-6">Welcome back! Here's what's happening in your workspace.</p>
+        </div>
+
         <div className="space-y-6">
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
             <Card>
@@ -263,8 +365,8 @@ function Dashboard() {
               ) : projects.length > 0 ? (
                 <div className="space-y-4">
                   {projects.slice(0, 5).map((project) => (
-                    <div 
-                      key={project.id} 
+                    <div
+                      key={project.id}
                       className="flex items-center justify-between p-4 border rounded-lg hover:shadow-sm transition-shadow cursor-pointer"
                       onClick={() => fetchTeams(project.id)}
                     >
@@ -274,16 +376,13 @@ function Dashboard() {
                         </div>
                         <div>
                           <h3 className="font-medium">{project.name}</h3>
-                         
                         </div>
                       </div>
                       <div className="flex items-center space-x-2">
                         <Badge variant="outline" className="capitalize">
                           {project.usageMode.toLowerCase()}
                         </Badge>
-                        <Badge variant="secondary">
-                          {project.teams?.length || 0} teams
-                        </Badge>
+                        <Badge variant="secondary">{project.teams?.length || 0} teams</Badge>
                       </div>
                     </div>
                   ))}
@@ -321,25 +420,22 @@ function Dashboard() {
                 ) : (
                   <div className="space-y-4">
                     {teams.map((team) => (
-                      <div key={team.id} className="flex items-center justify-between p-4 border rounded-lg hover:shadow-sm transition-shadow">
+                      <div
+                        key={team.id}
+                        className="flex items-center justify-between p-4 border rounded-lg hover:shadow-sm transition-shadow"
+                      >
                         <div className="flex items-center space-x-4">
                           <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
                             <Users className="h-5 w-5 text-purple-600" />
                           </div>
                           <div>
                             <h3 className="font-medium">{team.name}</h3>
-                            <p className="text-sm text-muted-foreground">
-                              {team.members?.length || 0} members
-                            </p>
+                            <p className="text-sm text-muted-foreground">{team.members?.length || 0} members</p>
                           </div>
                         </div>
                         <div className="flex items-center space-x-2">
-                          <Badge variant="outline">
-                            {team.members?.length || 0} members
-                          </Badge>
-                          <Badge variant="secondary">
-                            Active
-                          </Badge>
+                          <Badge variant="outline">{team.members?.length || 0} members</Badge>
+                          <Badge variant="secondary">Active</Badge>
                         </div>
                       </div>
                     ))}
@@ -369,7 +465,10 @@ function Dashboard() {
               ) : pages.length > 0 ? (
                 <div className="space-y-4">
                   {pages.slice(0, 5).map((page) => (
-                    <div key={page.id} className="flex items-center justify-between p-4 border rounded-lg hover:shadow-sm transition-shadow cursor-pointer">
+                    <div
+                      key={page.id}
+                      className="flex items-center justify-between p-4 border rounded-lg hover:shadow-sm transition-shadow cursor-pointer"
+                    >
                       <div className="flex items-center space-x-4">
                         <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
                           <FileText className="h-5 w-5 text-green-600" />
@@ -377,7 +476,8 @@ function Dashboard() {
                         <div className="flex-1">
                           <h3 className="font-medium">{page.title}</h3>
                           <p className="text-sm text-muted-foreground line-clamp-1">
-                            {stripHtmlTags(page.content).substring(0, 100) + (stripHtmlTags(page.content).length > 100 ? '...' : '')}
+                            {stripHtmlTags(page.content).substring(0, 100) +
+                              (stripHtmlTags(page.content).length > 100 ? "..." : "")}
                           </p>
                         </div>
                       </div>
@@ -419,9 +519,11 @@ function Dashboard() {
             </Button>
           </div>
         </div>
-      ) : null}
-    </div>
-  )
+      </div>
+    )
+  }
+
+  return null
 }
 
 export default Dashboard
