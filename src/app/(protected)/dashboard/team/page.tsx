@@ -8,7 +8,6 @@ import { toast } from 'sonner'
 
 function TeamManagementPage() {
     const [workspaces, setWorkspaces] = useState<WorkspaceData[]>([])
-    const [selectedWorkspace, setSelectedWorkspace] = useState<WorkspaceData | null>(null)
     const [selectedProject, setSelectedProject] = useState<Project | null>(null)
     const [loading, setLoading] = useState(true)
     const [teamsLoading, setTeamsLoading] = useState(false)
@@ -104,7 +103,7 @@ function TeamManagementPage() {
     useEffect(() => {
         fetchWorkspace()
         fetchProjects()
-    }, []) // Fixed: Added dependency array to prevent infinite loop
+    }, [])
 
     if (loading) {
         return (

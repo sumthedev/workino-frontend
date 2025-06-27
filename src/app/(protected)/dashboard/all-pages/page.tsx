@@ -4,15 +4,8 @@ import React, { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 import { Loader2 } from 'lucide-react'
 import PagesList from '@/components/organisms/PageList/PageList'
+import { Page } from '@/lib/constant/type'
 
-interface Page {
-  id: string
-  title: string
-  content: string
-  authorId: string
-  createdAt: string
-  updatedAt: string
-}
 
 function PagesPage() {
   const [pages, setPages] = useState<Page[]>([])
@@ -33,7 +26,6 @@ function PagesPage() {
       toast.success("Pages fetched successfully")
     } catch (error) {
       toast.error("Error fetching pages")
-      console.error("Error fetching pages:", error)
     } finally {
       setIsLoading(false)
     }
