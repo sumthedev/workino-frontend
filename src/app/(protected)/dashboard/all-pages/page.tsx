@@ -24,7 +24,7 @@ function PagesPage() {
 
       setPages(res.data)
       toast.success("Pages fetched successfully")
-    } catch (error) {
+    } catch {
       toast.error("Error fetching pages")
     } finally {
       setIsLoading(false)

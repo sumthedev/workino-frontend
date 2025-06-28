@@ -15,9 +15,7 @@ import {
   Calendar,
   User,
   RefreshCw,
-  ArrowRight,
-  Briefcase,
-  Target,
+  ArrowRight
 } from "lucide-react"
 import api from "@/api/auth"
 import { toast } from "sonner"
@@ -25,11 +23,9 @@ import type { Page, Project, Team, WorkspaceData } from "@/lib/constant/type"
 
 function Dashboard() {
   const router = useRouter()
-  const [workspaces, setWorkspaces] = useState<WorkspaceData[]>([])
   const [currentWorkspace, setCurrentWorkspace] = useState<WorkspaceData | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [user, setUser] = useState<any>(null)
   const [projects, setProjects] = useState<Project[]>([])
   const [pages, setPages] = useState<Page[]>([])
   const [projectsLoading, setProjectsLoading] = useState(false)
@@ -63,12 +59,9 @@ function Dashboard() {
 
       const allWorkspaces = response.data.workspace
       if (allWorkspaces && allWorkspaces.length > 0) {
-        setWorkspaces(allWorkspaces)
         const firstWorkspace = allWorkspaces[0]
         setCurrentWorkspace(firstWorkspace)
-        setUser(firstWorkspace.owner)
       } else {
-        setWorkspaces([])
         setCurrentWorkspace(null)
         setError("no_workspaces")
       }
@@ -102,7 +95,7 @@ function Dashboard() {
       if (projectsData.length > 0) {
         await fetchTeams(projectsData[0].id)
       }
-    } catch (error) {
+    } catch {
       toast.error("Failed to load projects")
       setProjects([])
     } finally {
@@ -122,7 +115,7 @@ function Dashboard() {
       })
 
       setPages(res.data)
-    } catch (error) {
+    } catch  {
       toast.error("Error fetching pages")
     } finally {
       setPagesLoading(false)
@@ -274,7 +267,7 @@ function Dashboard() {
             <div className="space-y-2">
               <h2 className="text-xl font-semibold text-foreground">Unable to Load Dashboard</h2>
               <p className="text-muted-foreground">
-                We're having trouble loading your dashboard. Please check your connection and try again.
+                We are having trouble loading your dashboard. Please check your connection and try again.
               </p>
             </div>
             <div className="space-y-3">
@@ -297,7 +290,7 @@ function Dashboard() {
       <div>
         <div className="space-y-4">
           <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
-          <p className="text-muted-foreground mb-6">Welcome back! Here's what's happening in your workspace.</p>
+          <p className="text-muted-foreground mb-6">Welcome back! Here is whats happening in your workspace.</p>
         </div>
 
         <div className="space-y-6">

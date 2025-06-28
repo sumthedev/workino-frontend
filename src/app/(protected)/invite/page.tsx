@@ -37,7 +37,7 @@ export default function Page() {
       );
       setWorkspaces(teamWorkspaces);
 
-    } catch (err: any) {
+    } catch {
       toast.error("Failed to fetch workspace")
     } finally {
       setLoading(false)
@@ -55,7 +55,7 @@ export default function Page() {
       const projectsData = response.data?.projects || [];
       const filteredProjects = projectsData.filter((project: any) => project.usageMode === "TEAM");
       setProjects(filteredProjects);
-    } catch (err) {
+    } catch {
       toast.error("Failed to fetch workspace")
     }
   }
@@ -76,8 +76,9 @@ export default function Page() {
       }))
 
       setTeams(teamsList)
-    } catch (error) {
+    } catch (error : any) {
       toast.error("Failed to fetch workspace")
+      setError(error)
     } finally {
       setIsLoadingTeams(false)
     }

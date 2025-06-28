@@ -38,7 +38,7 @@ export default function ForgotPasswordForm() {
               <CheckCircle className="mx-auto h-16 w-16 text-green-500" />
               <h2 className="text-2xl font-bold text-green-700">Email Sent!</h2>
               <p className="text-gray-600">
-                We've sent a password reset link to your email address. Please check your inbox and follow the
+                We have sent a password reset link to your email address. Please check your inbox and follow the
                 instructions to reset your password.
               </p>
               <div className="space-y-2">
@@ -66,7 +66,7 @@ export default function ForgotPasswordForm() {
           </div>
           <CardTitle className="text-2xl font-bold text-center">Forgot Password?</CardTitle>
           <CardDescription className="text-center">
-            No worries! Enter your email address and we'll send you a link to reset your password.
+            No worries! Enter your email address and we will send you a link to reset your password.
           </CardDescription>
         </CardHeader>
         <Formik initialValues={initialValues} validationSchema={ForgotPasswordSchema} onSubmit={handleSubmit}>

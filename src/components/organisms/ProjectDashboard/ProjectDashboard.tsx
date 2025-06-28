@@ -59,7 +59,7 @@ export function ProjectDashboard({ workspace, usageMode }: ProjectDashboardProps
       const filteredProjects = projectsData.filter((project: any) => project.usageMode === usageMode);
       setProjects(filteredProjects);
 
-    } catch (error) {
+    } catch {
       toast.error("Failed to load projects")
       setProjects([])
     } finally {
@@ -93,7 +93,7 @@ export function ProjectDashboard({ workspace, usageMode }: ProjectDashboardProps
       }
 
       const token = localStorage.getItem("token")
-      const response = await api.post("/project/create", payload, {
+        await api.post("/project/create", payload, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

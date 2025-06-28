@@ -47,7 +47,6 @@ interface TeamMember {
   role: string
 }
 
-const mockUser = { id: "user-1", name: "John Doe", email: "john@example.com" }
 
 export function TaskBoard({ team, project, workspace, usageMode, onBack }: TaskBoardProps) {
   const [tasks, setTasks] = useState<Task[]>([])

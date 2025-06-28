@@ -77,7 +77,7 @@ export default function InviteTeamMembers({
         teamId: selectedTeamId,
       }
       const token = localStorage.getItem("token")
-      const res = await api.post("/invite", payload, {
+        await api.post("/invite", payload, {
         headers: { Authorization: `Bearer ${token}` },
       })
 
@@ -164,7 +164,7 @@ export default function InviteTeamMembers({
             <Check className="w-6 h-6 text-green-600" />
           </div>
           <CardTitle className="text-2xl">Invitations Sent Successfully!</CardTitle>
-          <CardDescription>Invitations have been sent to all members for team "{selectedTeam?.name}".</CardDescription>
+          <CardDescription>Invitations have been sent to all members for team {selectedTeam?.name}.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="bg-muted p-4 rounded-lg">

@@ -7,7 +7,7 @@ import { Users, User } from "lucide-react"
 type UsageMode = "ALONE" | "TEAM" | null
 
 
-function page() {
+function Page() {
   const [usageMode, setUsageMode] = useState<UsageMode>(null)
   const [step, setStep] = useState<"onboarding" | "workspace">("onboarding")
 
@@ -76,4 +76,4 @@ function page() {
   )
 }
 
-export default page
+export default Page

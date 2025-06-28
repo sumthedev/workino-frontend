@@ -1,13 +1,11 @@
 "use client";
 import { useEffect, useState } from "react";
-import { useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import api from "@/api/auth";
 import { DASHBOARD } from "@/lib/constant/Route";
 import { toast } from "sonner";
 
 export default function AcceptInvite({ inviteToken }: { inviteToken: string }) {
-  const searchParams = useSearchParams();
   const [status, setStatus] = useState<"idle" | "success" | "error">("idle");
   const [message, setMessage] = useState("");
 
@@ -25,7 +23,7 @@ export default function AcceptInvite({ inviteToken }: { inviteToken: string }) {
 
       try {
         const token = localStorage.getItem("token");
-        const res = await api.post("/accept", payload, {
+          await api.post("/accept", payload, {
           headers: { Authorization: `Bearer ${token}` }
         });
 

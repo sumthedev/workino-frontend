@@ -35,10 +35,6 @@ interface ToolbarButtonProps {
   title: string
 }
 
-interface ApiResponse {
-  msg?: string
-}
-
 function CreateNewPage(): JSX.Element {
   const [title, setTitle] = useState<string>("")
   const [isLoading, setIsLoading] = useState<boolean>(false)
@@ -94,7 +90,7 @@ function CreateNewPage(): JSX.Element {
 
     try {
      
-      const response =  await api.post("/pages/create", payload, {
+       await api.post("/pages/create", payload, {
         headers: {
           Authorization: `Bearer ${token}`,
         }})
@@ -105,7 +101,7 @@ function CreateNewPage(): JSX.Element {
         // setTitle("")
         // editor?.commands.clearContent()
       
-    } catch (error) {
+    } catch {
      toast.error("Error creating page")
      
     } finally {

@@ -1,17 +1,15 @@
 "use client"
 import api from '@/api/auth'
 import { Button } from '@/components/ui/button'
-import { Project, Team, WorkspaceData } from '@/lib/constant/type'
+import { Project, Team } from '@/lib/constant/type'
 import { useRouter } from 'next/navigation'
 import React, { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 
 function TeamManagementPage() {
-    const [workspaces, setWorkspaces] = useState<WorkspaceData[]>([])
     const [selectedProject, setSelectedProject] = useState<Project | null>(null)
     const [loading, setLoading] = useState(true)
     const [teamsLoading, setTeamsLoading] = useState(false)
-    const [error, setError] = useState<string | null>(null)
     const [projects, setProjects] = useState<Project[]>([])
     const [teams, setTeams] = useState<Team[]>([])
     const router = useRouter()
@@ -32,9 +30,7 @@ function TeamManagementPage() {
                 toast.error("No workspaces found")
                 return
             }
-
-            setWorkspaces(workspaceList)
-            setError(null)
+            
         } catch (err: any) {
             toast.error("Error loading workspace")
             if (err.response?.status === 404) {
@@ -58,7 +54,7 @@ function TeamManagementPage() {
 
             const projectsData = response.data?.projects || []
             setProjects(projectsData)
-        } catch (error) {
+        } catch {
             toast.error("Failed to load projects")
             setProjects([])
         }

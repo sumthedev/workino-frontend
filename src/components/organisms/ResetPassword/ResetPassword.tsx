@@ -78,7 +78,7 @@ export default function ResetPasswordForm() {
           </div>
           <CardTitle className="text-2xl font-bold text-center">Reset Password</CardTitle>
           <CardDescription className="text-center">
-            Enter your new password below. Make sure it's strong and secure.
+            Enter your new password below. Make sure it is strong and secure.
           </CardDescription>
         </CardHeader>
         <Formik initialValues={initialValues} validationSchema={ResetPasswordSchema} onSubmit={handleSubmit}>

@@ -1,12 +1,13 @@
-import ResetPasswordForm from '@/components/organisms/ResetPassword/ResetPassword'
-import React from 'react'
+'use client';
 
-function page() {
+import ResetPassword from '@/components/organisms/ResetPassword/ResetPassword';
+import React, { Suspense } from 'react';
+const Page = () => {
   return (
-    <div>
-      <ResetPasswordForm/>
-    </div>
-  )
-}
+    <Suspense fallback={<div>Loading...</div>}>
+      <ResetPassword />
+    </Suspense>
+  );
+};
 
-export default page
+export default Page;

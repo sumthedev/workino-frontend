@@ -3,7 +3,7 @@
 import AcceptInvite from '@/components/organisms/AcceptInvitation/AcceptInvitation'
 import { useSearchParams } from 'next/navigation'
 
- function page() {
+ function Page() {
   const searchParams = useSearchParams();
     const token = searchParams.get('token') || ''
 
@@ -14,5 +14,5 @@ import { useSearchParams } from 'next/navigation'
   )
 }
 
-export default page
+export default Page
 

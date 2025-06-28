@@ -143,7 +143,7 @@ export default function Onboarding() {
                     <User className="w-5 h-5 text-green-500" />
                     <div>
                       <div className="font-medium">Just me</div>
-                      <div className="text-sm text-muted-foreground">I'll be working on my own</div>
+                      <div className="text-sm text-muted-foreground">I will be working on my own</div>
                     </div>
                   </Label>
                 </div>
@@ -154,7 +154,7 @@ export default function Onboarding() {
                     <Users className="w-5 h-5 text-purple-500" />
                     <div>
                       <div className="font-medium">With a team</div>
-                      <div className="text-sm text-muted-foreground">I'll be collaborating with others</div>
+                      <div className="text-sm text-muted-foreground">I will be collaborating with others</div>
                     </div>
                   </Label>
                 </div>

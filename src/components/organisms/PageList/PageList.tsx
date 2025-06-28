@@ -48,7 +48,7 @@ interface PagesListProps {
   onRefresh: () => void
 }
 
-function PagesList({ pages, onPageDeleted, onRefresh }: PagesListProps) {
+function PagesList({ pages, onPageDeleted }: PagesListProps) {
   const [deletingId, setDeletingId] = useState<string | null>(null)
   const router = useRouter()
 
@@ -70,7 +70,7 @@ function PagesList({ pages, onPageDeleted, onRefresh }: PagesListProps) {
       
       toast.success("Page deleted successfully")
       onPageDeleted(pageId)
-    } catch (error) {
+    } catch {
       toast.error("Error deleting page")
     } finally {
       setDeletingId(null)
@@ -104,7 +104,7 @@ function PagesList({ pages, onPageDeleted, onRefresh }: PagesListProps) {
         <FileText className="h-16 w-16 text-gray-300 mb-4" />
         <h3 className="text-xl font-semibold mb-2">No pages yet</h3>
         <p className="text-gray-500 mb-6 max-w-md">
-          You haven't created any pages yet. Start by creating your first page to share your thoughts and ideas.
+          You have not created any pages yet. Start by creating your first page to share your thoughts and ideas.
         </p>
         <Button 
           onClick={() => router.push('/new-page')}
@@ -187,7 +187,7 @@ function PagesList({ pages, onPageDeleted, onRefresh }: PagesListProps) {
                           <AlertDialogTitle>Are you sure?</AlertDialogTitle>
                           <AlertDialogDescription>
                             This action cannot be undone. This will permanently delete the page
-                            "{page.title}" and remove all its content.
+                            {page.title} and remove all its content.
                           </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>
@@ -240,7 +240,7 @@ function PagesList({ pages, onPageDeleted, onRefresh }: PagesListProps) {
       {pages.length >= 3 && (
         <div className="text-center py-4">
           <Badge variant="outline" className="text-amber-600 border-amber-200">
-            You've reached the maximum of 3 pages
+            You have reached the maximum of 3 pages
           </Badge>
         </div>
       )}

@@ -24,7 +24,7 @@ export default function VerifyEmailPage() {
     setStatus(res.data.msg);
     router.push(LOGIN)
     toast.success("verification done")
-  } catch (err: any) {
+  } catch  {
    toast.error("verifiaction failed")
   } finally {
     setLoading(false);

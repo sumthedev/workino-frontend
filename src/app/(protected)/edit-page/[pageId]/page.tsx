@@ -107,7 +107,7 @@ function EditPage(): JSX.Element {
       setOriginalPage(page)
       setTitle(page.title)
       editor?.commands.setContent(page.content)
-    } catch (error) {
+    } catch {
       toast.error("Error fetching page")
       router.push("/dashboard/all-pages")
     } finally {
@@ -170,7 +170,7 @@ function EditPage(): JSX.Element {
         })
       }
       
-    } catch (error) {
+    } catch {
       toast.error("Error updating page")
     } finally {
       setIsLoading(false)
@@ -191,7 +191,7 @@ function EditPage(): JSX.Element {
       
       toast.success("Page deleted successfully")
       router.push("/dashboard/all-pages")
-    } catch (error) {
+    } catch {
       toast.error("Error deleting page")
     } finally {
       setIsDeleting(false)
@@ -284,7 +284,7 @@ function EditPage(): JSX.Element {
                   <AlertDialogHeader>
                     <AlertDialogTitle>Delete Page</AlertDialogTitle>
                     <AlertDialogDescription>
-                      Are you sure you want to delete "{title}"? This action cannot be undone.
+                      Are you sure you want to delete {title}? This action cannot be undone.
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>

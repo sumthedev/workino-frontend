@@ -12,7 +12,7 @@ import { Eye, EyeOff, Loader2 } from "lucide-react"
 import { LoginFormValues, LoginSchema } from "@/lib/validation/auth"
 import api from "@/api/auth"
 import { useRouter } from "next/navigation"
-import { DASHBOARD, FORGET_PASSWORD, LOGIN, ONBOARDING, REGISTER } from "@/lib/constant/Route"
+import { FORGET_PASSWORD, ONBOARDING, REGISTER } from "@/lib/constant/Route"
 import Link from "next/link"
 import { toast } from "sonner"
 
@@ -46,7 +46,7 @@ export default function LoginForm() {
      toast.success("Login successfull")
      router.push(ONBOARDING)
 
-    } catch (error) {
+    } catch {
       toast.success("Invalid email or password. Please try again.")
     } finally {
       setSubmitting(false)

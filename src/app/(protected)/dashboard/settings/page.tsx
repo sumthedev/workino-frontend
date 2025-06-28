@@ -44,10 +44,9 @@ export default function SettingsPage() {
   const router = useRouter()
 
   useEffect(() => {
-    if (user) {
-      fetchWorkspace()
-    }
-  }, [user])
+  fetchWorkspace();
+}, []);
+
 
   const handleLogout = async () => {
     try {
@@ -334,7 +333,7 @@ export default function SettingsPage() {
                           <AlertDialogHeader>
                             <AlertDialogTitle>Delete Workspace</AlertDialogTitle>
                             <AlertDialogDescription>
-                              Are you sure you want to delete "{workspace.name}"? This action cannot be undone and will
+                              Are you sure you want to delete {workspace.name}? This action cannot be undone and will
                               permanently delete all projects, pages, and data associated with this workspace.
                             </AlertDialogDescription>
                           </AlertDialogHeader>

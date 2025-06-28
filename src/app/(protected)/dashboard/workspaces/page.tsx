@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
-import { Building2, Plus, Users, Briefcase, ArrowRight, Loader2, RefreshCw } from "lucide-react"
+import { Building2, Plus, ArrowRight, Loader2, RefreshCw } from "lucide-react"
 
 function WorkspacePage() {
   const [workspaces, setWorkspaces] = useState<WorkspaceData[]>([])
@@ -136,7 +136,7 @@ function WorkspacePage() {
             <div className="space-y-2">
               <h2 className="text-xl font-semibold text-foreground">Unable to Load Workspaces</h2>
               <p className="text-muted-foreground">
-                We're having trouble loading your workspaces. Please check your connection and try again.
+                We are having trouble loading your workspaces. Please check your connection and try again.
               </p>
             </div>
             <div className="space-y-3">
