@@ -20,6 +20,7 @@ import {
 import api from "@/api/auth"
 import { toast } from "sonner"
 import type { Page, Project, Team, WorkspaceData } from "@/lib/constant/type"
+import { useAuth } from "@/hooks/useAuth"
 
 function Dashboard() {
   const router = useRouter()
@@ -32,6 +33,12 @@ function Dashboard() {
   const [pagesLoading, setPagesLoading] = useState(false)
   const [teams, setTeams] = useState<Team[]>([])
   const [teamsLoading, setTeamsLoading] = useState(false)
+  const {isOnBoarded, user} = useAuth()
+
+  console.log(isOnBoarded);
+  console.log(user?.onboarding, "hh");
+  
+  
 
   const stripHtmlTags = (html: string) => {
     if (!html) return "No content"

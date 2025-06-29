@@ -7,12 +7,11 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import { Checkbox } from "@/components/ui/checkbox"
 import { Eye, EyeOff, Loader2 } from "lucide-react"
 import { LoginFormValues, LoginSchema } from "@/lib/validation/auth"
 import api from "@/api/auth"
 import { useRouter } from "next/navigation"
-import { FORGET_PASSWORD, ONBOARDING, REGISTER } from "@/lib/constant/Route"
+import { DASHBOARD, FORGET_PASSWORD, REGISTER } from "@/lib/constant/Route"
 import Link from "next/link"
 import { toast } from "sonner"
 
@@ -44,7 +43,7 @@ export default function LoginForm() {
     })
 
      toast.success("Login successfull")
-     router.push(ONBOARDING)
+     router.push(DASHBOARD)
 
     } catch {
       toast.success("Invalid email or password. Please try again.")
@@ -61,7 +60,7 @@ export default function LoginForm() {
           <CardDescription className="text-center">Enter your credentials to access your account</CardDescription>
         </CardHeader>
         <Formik initialValues={initialValues} validationSchema={LoginSchema} onSubmit={handleSubmit}>
-          {({ isSubmitting, status, errors, touched, values, setFieldValue }) => (
+          {({ isSubmitting, status, errors, touched }) => (
             <Form>
               <CardContent className="space-y-4">
                 {status && (
@@ -106,19 +105,8 @@ export default function LoginForm() {
                   </div>
                   <ErrorMessage name="password" component="p" className="text-sm text-red-500" />
                 </div>
-
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-2">
-                    <Checkbox
-                      id="rememberMe"
-                      checked={values.rememberMe}
-                      onCheckedChange={(checked) => setFieldValue("rememberMe", checked)}
-                    />
-                    <Label htmlFor="rememberMe" className="text-sm">
-                      Remember me
-                    </Label>
-                  </div>
-                  <Link href={FORGET_PASSWORD} className="text-sm text-blue-600 hover:underline">
+                  <div className="flex justify-end space-x-2">  
+                  <Link href={FORGET_PASSWORD} className="text-sm mb-4 text-blue-600 hover:underline">
                     Forgot password?
                   </Link>
                 </div>

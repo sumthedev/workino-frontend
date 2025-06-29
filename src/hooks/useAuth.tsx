@@ -40,7 +40,7 @@ export function useAuth() {
   const login = async (email: string, password: string) => {
     try {
       const res = await api.post<LoginResponse>("/auth/login", { email, password });
-      localStorage.setItem("token", res.data.token);
+      localStorage.setItem("token", res.data.token);  
       await fetchUser();
       return { success: true };
     } catch (err: any) {
