@@ -1,7 +1,7 @@
 "use client";
 import { Loading } from "@/components/molecules/Loading/Loading";
 import { useAuth } from "@/hooks/useAuth";
-import { ReactNode, useEffect, useMemo } from "react";
+import { ReactNode} from "react";
 
 interface ProtectedLayoutProps {
   children: ReactNode;
