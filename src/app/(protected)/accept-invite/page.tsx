@@ -7,8 +7,6 @@ import { Suspense } from 'react'
 function AcceptInviteContent() {
   const searchParams = useSearchParams();
   const token = searchParams.get('token') || ''
-  console.log(token);
-  
 
   return (
     <div className="h-screen bg-background flex items-center justify-center p-4">
